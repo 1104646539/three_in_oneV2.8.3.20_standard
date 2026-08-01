@@ -9,8 +9,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.db.sqlite.Selector;
 import com.lidroid.xutils.exception.DbException;
+import com.tnd.jinbiao.model.PeopleModel;
 import com.tnd.jinbiao.model.ResultModel;
 import com.tnd.multifuction.R;
 import com.tnd.multifuction.db.DbHelper;
@@ -38,7 +40,11 @@ public class JbMainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_jb_main);
         DbHelper.InitDb(getApplicationContext());
-        SerialUtils.InitSerialPort(this);
+        try {
+            SerialUtils.InitSerialPort(this);
+        } catch (UnsatisfiedLinkError e) {
+            Log.i("JbMainActivity", "onCreate: 串口打开失败");
+        }
         initSP();
 
     }
@@ -52,10 +58,23 @@ public class JbMainActivity extends Activity {
 
     private void initSP() {
         sp = getSharedPreferences(SPResource.FILE_NAME, Context.MODE_PRIVATE);
-        Global.uploadUrl = sp.getString(SPResource.KEY_UPLOAD_URL, "https://qzsp.leadall.net/data/reception/detectData");
-        Global.TESTING_UNIT_NAME = sp.getString(SPResource.KEY_UPLOAD_USERNAME, "cs002");
-        Global.TESTING_UNIT_NUMBER = sp.getString(SPResource.KEY_UPLOAD_PASSWORD, "testwe2023");
-        Global.ASSET_NAME = sp.getString(SPResource.ASSET_NAME,"1号");
+
+//        try {
+//            PeopleModel check = new PeopleModel();
+//            check.source = 2;
+//            check.name = "黄文祥";
+//            DbHelper.GetInstance().save(check);
+//            PeopleModel twh = new PeopleModel();
+//            twh.source = 3;
+//            twh.name = "10-32";
+//            DbHelper.GetInstance().save(twh);
+//        } catch (DbException e) {
+//            throw new RuntimeException(e);
+//        }
+//        Global.uploadUrl = sp.getString(SPResource.KEY_UPLOAD_URL, "https://qzsp.leadall.net/data/reception/detectData");
+//        Global.TESTING_UNIT_NAME = sp.getString(SPResource.KEY_UPLOAD_USERNAME, "cs002");
+//        Global.TESTING_UNIT_NUMBER = sp.getString(SPResource.KEY_UPLOAD_PASSWORD, "testwe2023");
+//        Global.ASSET_NAME = sp.getString(SPResource.ASSET_NAME,"1号");
         Global.ASSET_CODE = sp.getString(SPResource.ASSET_CODE, "001");
     }
 

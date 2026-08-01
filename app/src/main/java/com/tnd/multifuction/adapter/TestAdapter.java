@@ -67,14 +67,14 @@ public class TestAdapter<T> extends RecyclerView.Adapter {
     public static String TAG = TestAdapter.class.getSimpleName();
     private List<CheckResult> checkResults = new ArrayList<>();
     private Context context;
-    public static int DIALOG_CHECKED_ORG = 1;//被检测单位
-    public static int DIALOG_SAMPLE_SOURCE = 2;//商品来源
+    public static int DIALOG_CHECKED_ORG = 1;//商户姓名
+    public static int DIALOG_SAMPLE_SOURCE = 2;//摊位号
     public static int DIALOG_SAMPLE_NAME = 3;//样品名称
-    static List<BCheckOrg> bcheckedOrg;//被检测单位
-    static List<SampleSource> sampleSources;//商品来源
+    static List<BCheckOrg> bcheckedOrg;//商户姓名
+    static List<SampleSource> sampleSources;//摊位号
     static List<SampleName> sampleNames;//样品名称
-    static List<BCheckOrg> bcheckedOrg_s = new ArrayList<>();//被检测单位
-    static List<SampleSource> sampleSources_s = new ArrayList<>();//商品来源
+    static List<BCheckOrg> bcheckedOrg_s = new ArrayList<>();//商户姓名
+    static List<SampleSource> sampleSources_s = new ArrayList<>();//摊位号
     static List<SampleName> sampleNames_s = new ArrayList<>();//样品名称
 
     public List<CheckResult> getData() {
@@ -580,18 +580,18 @@ public class TestAdapter<T> extends RecyclerView.Adapter {
                     showToast("请输入" + checkResult.channel + "的样品名称");
                     return false;
                 }
-//                else if (!isNotNull(checkResult.bcheckedOrganization)) {
-//                    showToast("请输入" + checkResult.channel + "的被检单位");
+                else if (!isNotNull(checkResult.bcheckedOrganization)) {
+                    showToast("请输入" + checkResult.channel + "的商户姓名");
+                    return false;
+                }
+                else if (!isNotNull(checkResult.sampleSource)) {
+                    showToast("请输入" + checkResult.channel + "的摊位号");
+                    return false;
+                }
+//                else if (!isNotNull(checkResult.weight)) {
+//                    showToast("请输入" + checkResult.channel + "的重量");
 //                    return false;
 //                }
-                else if (!isNotNull(checkResult.sampleSource)) {
-                    showToast("请输入" + checkResult.channel + "的商品来源");
-                    return false;
-                }
-                else if (!isNotNull(checkResult.weight)) {
-                    showToast("请输入" + checkResult.channel + "的重量");
-                    return false;
-                }
             }
         }
         return true;
@@ -603,7 +603,7 @@ public class TestAdapter<T> extends RecyclerView.Adapter {
     }
 
     private boolean isNotNull(String str) {
-        if (str != null) {
+        if (str != null && !str.isEmpty()) {
 //            if (!str.equals("")) {
             return true;
 //            }
@@ -612,7 +612,7 @@ public class TestAdapter<T> extends RecyclerView.Adapter {
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        //通道名 样品名称 样品类型 检测单位 商品来源 抑制率 检测结果
+        //通道名 样品名称 样品类型 检测单位 摊位号 抑制率 检测结果
         TextView tv_sample_aisle_number, tv_sample_name,tv_sample_type ,tv_bchecked_org, tv_sample_source, tv_yzl, tv_judge;
         //样品编号   重量
         EditText et_sample_number, et_sample_weight;
@@ -621,11 +621,11 @@ public class TestAdapter<T> extends RecyclerView.Adapter {
         FiltrateAdapter filtrateAdapter;
         ListView lv;
         EditText et_content;
-        //        List<BCheckOrg> bcheckedOrg;//被检测单位
-//        List<SampleSource> sampleSources;//商品来源
+        //        List<BCheckOrg> bcheckedOrg;//商户姓名
+//        List<SampleSource> sampleSources;//摊位号
 //        List<SampleName> sampleNames;//样品名称
-//        List<BCheckOrg> bcheckedOrg_s;//被检测单位
-//        List<SampleSource> sampleSources_s;//商品来源
+//        List<BCheckOrg> bcheckedOrg_s;//商户姓名
+//        List<SampleSource> sampleSources_s;//摊位号
 //        List<SampleName> sampleNames_s;//样品名称
         View item_view;
         ImageView iv_cb;

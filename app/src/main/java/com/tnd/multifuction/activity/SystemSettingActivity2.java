@@ -37,6 +37,7 @@ import com.tnd.multifuction.R;
 import com.tnd.multifuction.adapter.DialogSelectAdapter;
 import com.tnd.multifuction.dialog.EditDataDialog;
 import com.tnd.multifuction.dialog.EditURLDialog;
+import com.tnd.multifuction.dialog.EditURLDialog2;
 import com.tnd.multifuction.dialog.PrintSettingDialog;
 import com.tnd.multifuction.dialog.UploadingDialog;
 import com.tnd.multifuction.model.CheckResult;
@@ -85,12 +86,13 @@ public class SystemSettingActivity2 extends Activity implements View.OnClickList
     private Button btnIdSetting;
     private Button btnUploadSetting;
     private SharedPreferences sp;
-    private EditDataDialog editDataDialog_bc;//被检测单位
+    private EditDataDialog editDataDialog_bc;//商户姓名
     private EditDataDialog editDataDialog_c;//检测单位
-    private EditDataDialog editDataDialog_ss;//商品来源
+    private EditDataDialog editDataDialog_ss;//摊位号
     private EditDataDialog editDataDialog_sn;//样品名称
     private EditDataDialog editDataDialog_i;//检测人员
     private EditURLDialog editURLDialog;
+    private EditURLDialog2 editURLDialog2;
     private PrintSettingDialog printSettingDialog;
     private List<Print> prints_check;
     private List<Print> prints_data_manager;
@@ -153,12 +155,11 @@ public class SystemSettingActivity2 extends Activity implements View.OnClickList
         et_fenguang_reaction_time = findViewById(R.id.et_fenguang_reaction_time);
 
 
-
         et_asset_name = findViewById(R.id.et_asset_name);     //设备名称
         et_asset_code = findViewById(R.id.et_asset_code);     //设备编码
         et_print_code = findViewById(R.id.et_print_code);     //是否打印二维码
         et_print_code.setOnClickListener(this);                //绑定点击事件
-        et_print_code.setChecked(sp.getBoolean("isPrintQrCode",true)); //设置按钮默认选中
+        et_print_code.setChecked(sp.getBoolean("isPrintQrCode", true)); //设置按钮默认选中
 
 
         et_card_warm_time.setInputType(InputType.TYPE_CLASS_NUMBER);
@@ -234,7 +235,7 @@ public class SystemSettingActivity2 extends Activity implements View.OnClickList
                     str = "";
                 }
                 sp.edit().putString(SPResource.ASSET_NAME, str).commit();
-                Global.ASSET_NAME = ToolUtils.replenish(str,"");
+                Global.ASSET_NAME = ToolUtils.replenish(str, "");
                 Log.d("initView Save", "str=" + str);
             }
         });
@@ -254,8 +255,6 @@ public class SystemSettingActivity2 extends Activity implements View.OnClickList
 
         order_setting.setOnClickListener(this);
     }
-
-
 
 
     private void initData() {
@@ -280,9 +279,9 @@ public class SystemSettingActivity2 extends Activity implements View.OnClickList
 //        prints_check.add(new Print("判定结果", true, true, true));
 //        prints_check.add(new Print("通道号", true, true, true));
 //        prints_check.add(new Print("样品编号", true, false, false));
-//        prints_check.add(new Print("被检测单位", true, false, false));
+//        prints_check.add(new Print("商户姓名", true, false, false));
 //        prints_check.add(new Print("重量", true, false, false));
-//        prints_check.add(new Print("商品来源", true, false, false));
+//        prints_check.add(new Print("摊位号", true, false, false));
 //        prints_check.add(new Print("限量值", true, true, false));
 //        prints_check.add(new Print("限量标准", true, true, false));
 //
@@ -291,10 +290,10 @@ public class SystemSettingActivity2 extends Activity implements View.OnClickList
 //        prints_data_manager.add(new Print("抑制率", true, true, true));
 //        prints_data_manager.add(new Print("判定结果", true, true, true));
 //        prints_data_manager.add(new Print("通道号", true, true, true));
-//        prints_data_manager.add(new Print("被检测单位", true, false, false));
+//        prints_data_manager.add(new Print("商户姓名", true, false, false));
 //        prints_data_manager.add(new Print("检测单位", true, true, false));
 //        prints_data_manager.add(new Print("检测人员", true, true, false));
-//        prints_data_manager.add(new Print("商品来源", true, false, false));
+//        prints_data_manager.add(new Print("摊位号", true, false, false));
 //        prints_data_manager.add(new Print("样品编号", true, false, false));
 //        prints_data_manager.add(new Print("重量", true, false, false));
 //        prints_data_manager.add(new Print("限量值", true, true, false));
@@ -306,7 +305,9 @@ public class SystemSettingActivity2 extends Activity implements View.OnClickList
 //        spUtils.setDataList(SPResource.KEY_PRINT_DATA_MANAGER_DATA, prints_data_manager);
 //        Log.d("initData", "data a");
     }
+
     ProgressDialog waitDialog;
+
     private void showWaitDialog() {
         waitDialog = new ProgressDialog(this);
         waitDialog.setTitle("提示");
@@ -315,6 +316,7 @@ public class SystemSettingActivity2 extends Activity implements View.OnClickList
         waitDialog.setCancelable(false);
         waitDialog.show();
     }
+
     @Override
     public void onClick(View v) {
 
@@ -346,12 +348,12 @@ public class SystemSettingActivity2 extends Activity implements View.OnClickList
                 break;
             case R.id.et_print_code:
                 //给CheckBox设置事件监听
-                boolean isChecked=et_print_code.isChecked();
-                if(isChecked){
+                boolean isChecked = et_print_code.isChecked();
+                if (isChecked) {
                     //如果是选中状态就把布尔值改为true
                     sp.edit().putBoolean("isPrintQrCode", isChecked).commit();
                     Log.d("onInspector", "是否打印二维码:" + isChecked);
-                }else{
+                } else {
                     sp.edit().putBoolean("isPrintQrCode", isChecked).commit();
                     Log.d("onInspector", "是否打印二维码:" + isChecked);
 
@@ -361,12 +363,12 @@ public class SystemSettingActivity2 extends Activity implements View.OnClickList
     }
 
     /**
-     * 被检测单位
+     * 商户姓名
      *
      * @param v
      */
     public void onBCheckOrg(View v) {
-        editDataDialog_bc.showDialog("被检测单位",
+        editDataDialog_bc.showDialog("商户姓名",
                 EditDataDialog.DIALOG_TYPE_BCHEKEORG, null);
     }
 
@@ -389,12 +391,12 @@ public class SystemSettingActivity2 extends Activity implements View.OnClickList
     }
 
     /**
-     * 商品来源
+     * 摊位号
      *
      * @param v
      */
     public void onSampleSource(View v) {
-        editDataDialog_ss.showDialog("商品来源",
+        editDataDialog_ss.showDialog("摊位号",
                 EditDataDialog.DIALOG_TYPE_SAMPLESOURCE, null);
     }
 
@@ -472,11 +474,13 @@ public class SystemSettingActivity2 extends Activity implements View.OnClickList
             }
         });
     }
-    public void onEditProject(View v){
+
+    public void onEditProject(View v) {
 //        Intent startEditProject= new Intent(this,EditProjectActivity.class);
 //        startActivity(startEditProject);
         startActivity(new Intent(this, ProjectActivity.class));
     }
+
     /**
      * 校准
      *
@@ -496,18 +500,18 @@ public class SystemSettingActivity2 extends Activity implements View.OnClickList
             public void onUploading() {
                 if (!SerialUtils.COM3_SendData(Global.LightSame)) {
                     APPUtils.showToast(act, "校准失败");
-                }else{
-                    APPUtils.showToast(act, "校准成功，校准时间约10分钟，请耐心等待所有灯光点亮！",true);
+                } else {
+                    APPUtils.showToast(act, "校准成功，校准时间约10分钟，请耐心等待所有灯光点亮！", true);
                     showWaitDialog();
                     mHandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            if (waitDialog!=null){
+                            if (waitDialog != null) {
                                 waitDialog.dismiss();
                                 APPUtils.showToast(act, "校准成功，校准已结束");
                             }
                         }
-                    },1000*60*10);
+                    }, 1000 * 60 * 10);
                 }
             }
         });
@@ -525,7 +529,7 @@ public class SystemSettingActivity2 extends Activity implements View.OnClickList
     }
 
     /**
-     * 上传设置
+     * 上传设置 泉州食安
      *
      * @param v
      */
@@ -544,6 +548,26 @@ public class SystemSettingActivity2 extends Activity implements View.OnClickList
                 sp.edit().putString(SPResource.KEY_UPLOAD_PASSWORD, Global.TESTING_UNIT_NUMBER).commit();
                 Toast.makeText(SystemSettingActivity2.this, "保存成功", Toast.LENGTH_SHORT).show();
             }
+        });
+    }
+
+    /**
+     * 上传设置 云农贸
+     *
+     * @param v
+     */
+    public void onUpLoadingSetting2(View v) {
+        if (editURLDialog2 == null) {
+            editURLDialog2 = new EditURLDialog2(this);
+        }
+        editURLDialog2.showDilaog((url, user, pw) -> {
+            Global.YNM_BaseUrl = url;
+            Global.YNM_APP_ID = user;
+            Global.YNM_APP_PW = pw;
+            sp.edit().putString(SPResource.KEY_YNM_BASE_URL, Global.YNM_BaseUrl).commit();
+//            sp.edit().putString(SPResource.KEY_YNM_APP_ID, Global.YNM_APP_ID).commit();
+//            sp.edit().putString(SPResource.KEY_YNM_APP_PW, Global.YNM_APP_PW).commit();
+            Toast.makeText(SystemSettingActivity2.this, "保存成功", Toast.LENGTH_SHORT).show();
         });
     }
 

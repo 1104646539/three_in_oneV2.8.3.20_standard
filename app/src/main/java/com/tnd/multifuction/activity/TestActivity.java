@@ -75,11 +75,11 @@ public class TestActivity extends Activity {
     protected boolean validateCommonDataIsComplete() {
 
         if (TextUtils.isEmpty(etCheckedOrg.getText().toString())) {
-            APPUtils.showToast(act, "请输入被检单位");
+            APPUtils.showToast(act, "请输入商户姓名");
             return false;
         }
         if (TextUtils.isEmpty(etSampleSource.getText().toString())) {
-            APPUtils.showToast(act, "请输入商品来源");
+            APPUtils.showToast(act, "请输入摊位号");
             return false;
         }
         if (Global.project == null) {

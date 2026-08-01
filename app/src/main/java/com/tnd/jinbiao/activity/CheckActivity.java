@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -50,6 +49,7 @@ import com.tnd.multifuction.model.CheckResult;
 import com.tnd.multifuction.model.FiltrateModel;
 import com.tnd.multifuction.model.SampleName;
 import com.tnd.multifuction.thread.UploadThread;
+import com.tnd.multifuction.thread.UploadThread2;
 import com.tnd.multifuction.util.BrightCommandM;
 import com.tnd.multifuction.util.Global;
 import com.tnd.multifuction.util.JsonUtil;
@@ -96,10 +96,11 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
     private Spinner companySpinner = null;
     private Spinner persionSpinner = null;
     private Spinner shijiSpinner = null;
-    private Spinner sampleSpinner=null;
+    private Spinner sampleSpinner = null;
     private Spinner projectSpinner = null;
-    private Spinner typeSpinner=null;
+    private Spinner typeSpinner = null;
     private Spinner sampleUnitSpinner = null;
+    private Spinner merchantNameSpinner = null;
 
     private EditText etJcx = null;
     private EditText etLjz = null;
@@ -111,22 +112,24 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
 
 
     private EditText et_Sample_Num = null;
-    private EditText et_SampleTime= null;
+    private EditText et_SampleTime = null;
 
     private String[] company_list = null;
     private String[] persion_list = null;
     private String[] shiji_list = null;
     private String[] sample_list = null;
+    private String[] merchantName_list = null;
     private String[] project_list = null;
-    private String[] type_list=null;
+    private String[] type_list = null;
     private String[] sampleUnit_list = null;
 
     private List<PeopleModel> persionlist = null;
     private List<PeopleModel> companylist = null;
     private List<ShiJiModel> shijilist = null;
     private List<SampleModel> samplelist = null;
+    private List<SampleModel> merchantName = null;
     private List<LineModel> projectlist = null;
-    private List<SampleTypeModel> typelist=null;
+    private List<SampleTypeModel> typelist = null;
     private List<PeopleModel> sampleUnitList = null;
 
     private ArrayAdapter<String> company_adater = null;
@@ -136,8 +139,10 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
     private ArrayAdapter<String> project_adapter = null;
     private ArrayAdapter<String> type_adapter = null;
     private ArrayAdapter<String> sampleUnit_adapter = null;
+    private ArrayAdapter<String> merchant_name_adapter = null;
 
     private Button upload_data;
+    private Button upload_data2;
     private Button btn_Imm_Check;
     private DbUtils db;
     private Activity act;
@@ -162,6 +167,7 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
     public PeopleModel persion_model = null;
     public ShiJiModel shiji_model = null;
     public SampleModel sample_model = null;
+    public SampleModel merchant_name_Model = null;
     public SampleTypeModel type_model = null;
     public PeopleModel sampleUnit_model = null;
 
@@ -169,13 +175,13 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
     private String source = null;
     String testTime = null;
 
-    String s =null;
+    String s = null;
     private ResultModel resultModel;
 
     static List<SampleName> sampleNames_s = new ArrayList<>();//样品名称
     static List<SampleName> sampleNames;
     private String[] sampleName_s = null;
-    private ArrayAdapter<String> sampleName= null;
+    private ArrayAdapter<String> sampleName = null;
     public SampleName samplename = null;
     private TextView tv_check_sample;
     private String path;
@@ -185,8 +191,10 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
     private EditText et_weight;
     private EditText et_content;
     private FiltrateAdapter filtrateAdapter;
-    private SimpleDateFormat formatterData;;
+    private SimpleDateFormat formatterData;
+    ;
     private Button btn_back;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -195,6 +203,7 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
         act = this;
         initView();
         upload_data.setEnabled(true);
+        upload_data2.setEnabled(true);
         source = getIntent().getStringExtra("source");
 
         if (!source.equals("1")) {
@@ -208,7 +217,7 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
             sampleUnitList = db.findAll(Selector.from(PeopleModel.class).where("source", "=", 3));
             shijilist = db.findAll(Selector.from(ShiJiModel.class));
             samplelist = db.findAll(Selector.from(SampleModel.class));
-            typelist=db.findAll(Selector.from(SampleTypeModel.class));
+            typelist = db.findAll(Selector.from(SampleTypeModel.class));
             projectlist = db.findAll(Selector.from(LineModel.class));//.where("source", "<", 4)
 
             if (persionlist == null) {
@@ -225,8 +234,8 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
             if (samplelist == null) {
                 samplelist = new ArrayList<SampleModel>();
             }
-            if(typelist==null){
-                typelist=new ArrayList<SampleTypeModel>();
+            if (typelist == null) {
+                typelist = new ArrayList<SampleTypeModel>();
             }
             if (projectlist == null) {
                 projectlist = new ArrayList<LineModel>();
@@ -234,18 +243,18 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
             if (sampleUnitList == null) {
                 sampleUnitList = new ArrayList<PeopleModel>();
             }
-            if(sampleNames == null){
+            if (sampleNames == null) {
                 sampleNames = new ArrayList<SampleName>();
             }
 
             company_list = new String[companylist.size()];
             persion_list = new String[persionlist.size()];
             shiji_list = new String[shijilist.size()];
-            sample_list=new String[samplelist.size()];
+            sample_list = new String[samplelist.size()];
             project_list = new String[projectlist.size()];
-            type_list=new String[typelist.size()];
+            type_list = new String[typelist.size()];
             sampleUnit_list = new String[sampleUnitList.size()];
-            sampleName_s =new String[sampleNames.size()];
+            sampleName_s = new String[sampleNames.size()];
 
             for (int i = 0; i < persionlist.size(); i++) {
                 PeopleModel model = persionlist.get(i);
@@ -278,12 +287,12 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
                 PeopleModel model = sampleUnitList.get(i);
                 sampleUnit_list[i] = model.getName();
             }
-            for(int i = 0; i < sampleNames.size(); i++){
-                SampleName sampleName =  sampleNames.get(i);
+            for (int i = 0; i < sampleNames.size(); i++) {
+                SampleName sampleName = sampleNames.get(i);
                 sampleName_s[i] = sampleName.getSampleName();
             }
 
-        } catch (DbException  e) {
+        } catch (DbException e) {
             e.printStackTrace();
         }
 
@@ -322,7 +331,7 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
         company_adater = new ArrayAdapter<String>(CheckActivity.this, R.layout.item_simple_spiner, company_list);//simple_spinner_item
         persion_adapter = new ArrayAdapter<String>(CheckActivity.this, R.layout.item_simple_spiner, persion_list);
         shiji_adapter = new ArrayAdapter<String>(CheckActivity.this, R.layout.item_simple_spiner, shiji_list);
-        sample_adapter= new ArrayAdapter<String>(CheckActivity.this, R.layout.item_simple_spiner, sample_list);
+        sample_adapter = new ArrayAdapter<String>(CheckActivity.this, R.layout.item_simple_spiner, sample_list);
         project_adapter = new ArrayAdapter<String>(CheckActivity.this, R.layout.item_simple_spiner, project_list);
         type_adapter = new ArrayAdapter<String>(CheckActivity.this, R.layout.item_simple_spiner, type_list);
         sampleUnit_adapter = new ArrayAdapter<String>(CheckActivity.this, R.layout.item_simple_spiner, sampleUnit_list);
@@ -399,7 +408,7 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
         sampleUnitSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-                if(sampleUnitList.size() > 0){
+                if (sampleUnitList.size() > 0) {
                     PeopleModel model = sampleUnitList.get(arg2);
                     sampleUnit_model = model;
                 }
@@ -464,23 +473,23 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
     }
 
 
-    public void getSH(){
+    public void getSH() {
 
         String content = "";
-        String cmd = tokenTest.generate("username="+ Global.TESTING_UNIT_NAME+"&password="+Global.TESTING_UNIT_NUMBER);
+        String cmd = tokenTest.generate("username=" + Global.TESTING_UNIT_NAME + "&password=" + Global.TESTING_UNIT_NUMBER);
         try {
             JSONObject json = new JSONObject();
             json.put("username", Global.TESTING_UNIT_NAME);
-            json.put("cmd",cmd);
+            json.put("cmd", cmd);
             json.put("limit", 200);
             json.put("page", 0);
             content = json.toString();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        Log.d("",""+ TextUtils.isEmpty(content));
-        if(!TextUtils.isEmpty(content)){
-            Log.d("","String content:"+content);
+        Log.d("", "" + TextUtils.isEmpty(content));
+        if (!TextUtils.isEmpty(content)) {
+            Log.d("", "String content:" + content);
 //                APPUtils.showToast((Activity) context, content);
             OkHttpClient okHttpClient = new OkHttpClient();
 
@@ -502,12 +511,12 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     String result = response.body().string();
-                    Log.d("获取的数据",result);
-                    SHData shData= (SHData) JsonUtil.getInstance().fromJson(result,SHData.class);
-                    Log.d("转换",shData.toString());
+                    Log.d("获取的数据", result);
+                    SHData shData = (SHData) JsonUtil.getInstance().fromJson(result, SHData.class);
+                    Log.d("转换", shData.toString());
                     sampleUnitList = new ArrayList<PeopleModel>();
-                    for(SHData.ItemsBean lists : shData.getItems()){
-                        PeopleModel sampleSource= new PeopleModel();
+                    for (SHData.ItemsBean lists : shData.getItems()) {
+                        PeopleModel sampleSource = new PeopleModel();
                         sampleSource.setEid(lists.getStall());
                         sampleSource.setName(lists.getEname());
                         sampleSource.setSource(3);
@@ -517,7 +526,8 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
             });
         }
     }
-
+    SampleName sampleNameSelected;
+    TextView tv_sample_type;
     public void initView() {
 
         companySpinner = (Spinner) findViewById(R.id.check_company_spinner);
@@ -526,7 +536,7 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
         sampleSpinner = (Spinner) findViewById(R.id.check_sample_spinner);
 
         projectSpinner = (Spinner) findViewById(R.id.check_project_spinner);
-        typeSpinner=(Spinner) findViewById(R.id.check_type_spinner);
+        typeSpinner = (Spinner) findViewById(R.id.check_type_spinner);
         sampleUnitSpinner = (Spinner) findViewById(R.id.checkactivity_sampleunit_spinner);
 
         etJcx = (EditText) findViewById(R.id.check_edit_jcx);
@@ -534,12 +544,13 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
         etDr = (EditText) findViewById(R.id.check_edit_value);
         etConcentrate = (EditText) findViewById(R.id.check_edit_long);
         long_tv = (TextView) findViewById(R.id.check_edit_tv_long);
+        tv_sample_type = (TextView) findViewById(R.id.tv_sample_type);
 
         tv_check_sample = (TextView) findViewById(R.id.tv_check_sample);
         et_Sample_Num = (EditText) findViewById(R.id.checkactivity_et_SampleNum);
         etSample = (EditText) findViewById(R.id.et_check_sample);
 
-        et_SampleTime = (EditText)findViewById(R.id.checkactivity_et_SampleTime);
+        et_SampleTime = (EditText) findViewById(R.id.checkactivity_et_SampleTime);
         et_SampleTime.setOnClickListener(this);
         String time = GetCurrentTime();
 
@@ -547,15 +558,15 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
 
         etResult = (EditText) findViewById(R.id.check_edit_result);
         btn_Imm_Check = (Button) findViewById(R.id.btn_Imm_Check);
-        move_time= (Button) findViewById(R.id.move_time);
-        upload_data= (Button) findViewById(R.id.upload_data);
+        move_time = (Button) findViewById(R.id.move_time);
+        upload_data = (Button) findViewById(R.id.upload_data);
+        upload_data2 = (Button) findViewById(R.id.upload_data2);
 
         //为按钮设置焦点，防止进入检测界面后立即弹出键盘的行为
         btn_Imm_Check.setFocusable(true);
         btn_Imm_Check.setFocusableInTouchMode(true);
         btn_Imm_Check.requestFocus();
         btn_Imm_Check.requestFocusFromTouch();
-
 
 
         tv_check_sample.setText("请选择样品名称");
@@ -608,17 +619,19 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         tv_check_sample.setText(sampleNames.get(position).getName());
                         et_Sample_Num.setText("" + sampleNames.get(position).getSampleNumber());
+                        tv_sample_type.setText(""+sampleNames.get(position).getSampleType());
                         et_Sample_Num.setEnabled(false);
                         //将最近选择的排列在最前面
                         sampleNames.get(position).setTime(new Date().getTime());
                         new SampleName().saveOrUpdate(sampleNames.get(position));
-                        SampleName sn = sampleNames.get(position);
+                        sampleNameSelected = sampleNames.get(position);
+
                         if (position < sampleNames_s.size()) {
-                            sampleNames_s.remove(sn);
-                            sampleNames_s.add(0, sn);
+                            sampleNames_s.remove(sampleNameSelected);
+                            sampleNames_s.add(0, sampleNameSelected);
                         }
                         sampleNames.remove(position);
-                        sampleNames.add(0, sn);
+                        sampleNames.add(0, sampleNameSelected);
                         if (dialog != null && dialog.isShowing()) {
                             dialog.dismiss();
                         }
@@ -678,6 +691,7 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
                             filtrateAdapter.setData(filter(str, sampleNames));
                         }
                     }
+
                     private List<SampleName> filter(String str, List<SampleName> data) {
                         Iterator<SampleName> iterable = data.iterator();
                         while (iterable.hasNext()) {
@@ -695,14 +709,12 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
         });
 
         sampleUnitSpinner.setVisibility(View.VISIBLE);
-        typeSpinner.setVisibility(View.VISIBLE);
+        typeSpinner.setVisibility(View.GONE);
         /*tv_check_type.setVisibility(View.GONE);
         tv_checkactivity_sampleunit.setVisibility(View.GONE);*/
 
 
-
-
-        if(sampleNames_s == null || sampleNames_s.isEmpty()){
+        if (sampleNames_s == null || sampleNames_s.isEmpty()) {
             try {
                 List<SampleName> sns = DbHelper.GetInstance().findAll(Selector.from(SampleName.class)
                         .orderBy("time", true));
@@ -726,7 +738,7 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
             if (sampleNames_s != null) {
                 sampleNames.addAll(sampleNames_s);
             }
-        }else {
+        } else {
             sampleNames.clear();
             sampleNames.addAll(sampleNames_s);
         }
@@ -739,18 +751,30 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
                 ClickUpload();
             }
         });
+        //上传数据按钮事件
+        upload_data2.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                ClickUpload2();
+            }
+        });
     }
 
-    private void ClickUpload() {
+    /**
+     * 上传 泉州食安
+     */
+    private void ClickUpload2() {
         if (!ToolUtils.isNetworkConnected(this)) {
             APPUtils.showToast(this, "请先连接网络");
             return;
         }
-        if(resultModel == null){
+        if (resultModel == null) {
             APPUtils.showToast(CheckActivity.this, "请先检测");
             return;
         }
-        if(uploadingFlag){
+        if (uploadingFlag) {
             Toast.makeText(this, "正在上传数据，请稍后...", Toast.LENGTH_LONG).show();
             return;
         }
@@ -758,16 +782,95 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
 
         List<CheckResult> list = new ArrayList<>();
         CheckResult checkResult = new CheckResult();
-        checkResult.sampleName = tv_check_sample.getText().toString();//样品名称
+        checkResult.isSelected = true;
+        checkResult.bcheckedOrganization = persion_model.getName().toString();//商户姓名
+        checkResult.sampleName = sampleNameSelected.sampleName;//样品名称
+        checkResult.sampleType = sampleNameSelected.sampleType;//样品类型
         checkResult.projectName = projectlist.get(projectSpinner.getSelectedItemPosition()).getName();//检测项目
-        checkResult.testTime =  new Date().getTime();//检测时间
-        //checkResult.twh = new Random().nextInt(100000)+"";//商品来源/摊位号
-        checkResult.twh = new Random().nextInt(100000) + "";//商品来源/
+        checkResult.testTime = new Date().getTime();//检测时间
+        //checkResult.twh = new Random().nextInt(100000)+"";//摊位号/摊位号
+        checkResult.twh = sampleUnitSpinner.getSelectedItem().toString();
         checkResult.weight = "1";//重量
         checkResult.sampleSource = sampleUnitSpinner.getSelectedItem().toString();//摊位号
         if ("阴性".equals(etResult.getText().toString().trim())) {
             checkResult.resultJudge = "合格";//检测结果
-        } else if ("阳性".equals(etResult.getText().toString().trim())){
+        } else if ("阳性".equals(etResult.getText().toString().trim())) {
+            checkResult.resultJudge = "不合格";//检测结果
+        }
+        checkResult.testValue = etDr.getText().toString().trim();//检测值
+
+        Collections.addAll(list, checkResult);
+        Message message = Message.obtain();
+        UploadThread2 t = new UploadThread2(act, list, new UploadThread2.onUploadListener() {
+            @Override
+            public void onSuccess(List<CheckResult> list, int returnId, int position, String result) {
+                if (!act.isFinishing()) {
+                    uploadingFlag = false;
+                    message.what = 200;
+                    message.obj = "上传成功！";
+//                    handler.sendMessage(message);
+                    try {
+                        resultModel.uploadId = 1;
+                        db.saveOrUpdate(resultModel);
+                    } catch (DbException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    //mHandler.obtainMessage(ToolUtils.upload_success, position, returnId, list).sendToTarget();
+                }
+//                if (result.contains("OK")) {
+                    APPUtils.showToast(CheckActivity.this, "上传数据成功");
+//                }
+            }
+
+            @Override
+            public void onFail(String failInfo) {
+                if (!act.isFinishing()) {
+                    APPUtils.showToast(CheckActivity.this, failInfo);
+                    //mHandler.obtainMessage(ToolUtils.upload_fail, failInfo).sendToTarget();
+                    message.what = 200;
+                    message.obj = "上传失败！";
+                    uploadingFlag = false;
+                }
+            }
+        });
+        t.start();
+
+        /*String msg = getUploadData();
+        GetDataFrom(msg);*/
+    }
+
+    /**
+     * 上传 泉州食安
+     */
+    private void ClickUpload() {
+        if (!ToolUtils.isNetworkConnected(this)) {
+            APPUtils.showToast(this, "请先连接网络");
+            return;
+        }
+        if (resultModel == null) {
+            APPUtils.showToast(CheckActivity.this, "请先检测");
+            return;
+        }
+        if (uploadingFlag) {
+            Toast.makeText(this, "正在上传数据，请稍后...", Toast.LENGTH_LONG).show();
+            return;
+        }
+        uploadingFlag = true;
+
+        List<CheckResult> list = new ArrayList<>();
+        CheckResult checkResult = new CheckResult();
+        checkResult.isSelected = true;
+        checkResult.sampleName = tv_check_sample.getText().toString();//样品名称
+        checkResult.projectName = projectlist.get(projectSpinner.getSelectedItemPosition()).getName();//检测项目
+        checkResult.testTime = new Date().getTime();//检测时间
+        //checkResult.twh = new Random().nextInt(100000)+"";//摊位号/摊位号
+        checkResult.twh = new Random().nextInt(100000) + "";//摊位号/
+        checkResult.weight = "1";//重量
+        checkResult.sampleSource = sampleUnitSpinner.getSelectedItem().toString();//摊位号
+        if ("阴性".equals(etResult.getText().toString().trim())) {
+            checkResult.resultJudge = "合格";//检测结果
+        } else if ("阳性".equals(etResult.getText().toString().trim())) {
             checkResult.resultJudge = "不合格";//检测结果
         }
         checkResult.testValue = etDr.getText().toString().trim();//检测值
@@ -786,7 +889,7 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
                 }
                 if (result.contains("上传成功")) {
                     APPUtils.showToast(CheckActivity.this, "上传数据成功");
-                }
+                }else{}
             }
 
             @Override
@@ -823,27 +926,36 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
         sb.append("data={");
         sb.append("\"sample_number\":");//样品编号
         sb.append("\"" + et_Sample_Num.getText().toString().trim() + "\"" + ",");
-        sb.append("\"test_unit_name\":");;//检测单位
+        sb.append("\"test_unit_name\":");
+        ;//检测单位
         sb.append("\"" + companylist.get(companySpinner.getSelectedItemPosition()).getName() + "\"" + ",");
-        sb.append("\"test_item\":");;//检测项目
+        sb.append("\"test_item\":");
+        ;//检测项目
         sb.append("\"" + projectlist.get(projectSpinner.getSelectedItemPosition()).getName() + "\"" + ",");
-        sb.append("\"sample_unit\":");;//商品来源
+        sb.append("\"sample_unit\":");
+        ;//摊位号
         sb.append("\"" + sampleUnitList.get(sampleUnitSpinner.getSelectedItemPosition()).getName() + "\"" + ",");
-        sb.append("\"sample_type\":");;//样品类型
+        sb.append("\"sample_type\":");
+        ;//样品类型
         sb.append("\"" + typelist.get(typeSpinner.getSelectedItemPosition()).getName() + "\"" + ",");
-        sb.append("\"test_results\":");;//检测结果
+        sb.append("\"test_results\":");
+        ;//检测结果
         sb.append("\"" + etResult.getText().toString().trim() + "\"" + ",");
-        sb.append("\"critical_value\":");;//检测值
-        if(source.equals("2")){
+        sb.append("\"critical_value\":");
+        ;//检测值
+        if (source.equals("2")) {
             sb.append("\"" + etDr.getText().toString().trim() + "\"" + ",");
-        }else{
+        } else {
             sb.append("\"" + etConcentrate.getText().toString().trim() + "\"" + ",");
         }
-        sb.append("\"test_man\":");;//检测员
+        sb.append("\"test_man\":");
+        ;//检测员
         sb.append("\"" + persionlist.get(persionSpinner.getSelectedItemPosition()).getName() + "\"" + ",");
-        sb.append("\"test_time\":");;//检测时间
+        sb.append("\"test_time\":");
+        ;//检测时间
         sb.append("\"" + testTime + "\"" + ",");
-        sb.append("\"sample_time\":");;//抽样时间
+        sb.append("\"sample_time\":");
+        ;//抽样时间
         sb.append("\"" + et_SampleTime.getText().toString().trim() + "\"");
         sb.append("}");
 
@@ -860,7 +972,7 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
                 Message message = Message.obtain();
                 try {
                     //1：url对象
-                    String urlString="http://www.huaxialj.com/gspt_all_api/api_hltstkj/pda/API/Application/root/Controller/root_antibiotic/Antibiotic_test_results_colloidal.php";
+                    String urlString = "http://www.huaxialj.com/gspt_all_api/api_hltstkj/pda/API/Application/root/Controller/root_antibiotic/Antibiotic_test_results_colloidal.php";
                     Log.i("uploadurl", urlString);
                     URL url = new URL(urlString);
                     //2;url.openconnection
@@ -895,29 +1007,29 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
                             String s = decodeUnicode(str);
                             System.out.println("=====================服务器返回的信息：" + result);
                             System.out.println("=====================上传结果：" + s);
-                            if(s != null){
-                                if(s.contains("成功")){
+                            if (s != null) {
+                                if (s.contains("成功")) {
                                     message.obj = s;
-                                }else{
+                                } else {
                                     message.obj = "上传失败";
                                 }
-                            }else{
+                            } else {
                                 message.obj = "上传失败";
                             }
                         }
-                    }else{
+                    } else {
                         message.obj = "上传失败";
                     }
-                } catch (UnknownHostException ex){
+                } catch (UnknownHostException ex) {
                     ex.printStackTrace();
                     message.obj = "上传失败,请检查网络连接！";
-                }catch (IOException ex){
+                } catch (IOException ex) {
                     ex.printStackTrace();
                     message.obj = "上传失败,请检查网络连接！";
-                }catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                     message.obj = "上传失败！";
-                }finally {
+                } finally {
                     uploadingFlag = false;
                     message.what = 200;
                     handler.sendMessage(message);
@@ -953,20 +1065,21 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
 
     /**
      * 根据输入流返回一个字符串
+     *
      * @param is
      * @return
      * @throws Exception
      */
-    private static String getStringFromInputStream(InputStream is) throws Exception{
+    private static String getStringFromInputStream(InputStream is) throws Exception {
 
-        ByteArrayOutputStream baos=new ByteArrayOutputStream();
-        byte[] buff=new byte[1024];
-        int len=-1;
-        while((len=is.read(buff))!=-1){
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        byte[] buff = new byte[1024];
+        int len = -1;
+        while ((len = is.read(buff)) != -1) {
             baos.write(buff, 0, len);
         }
         is.close();
-        String html=baos.toString();
+        String html = baos.toString();
         baos.close();
 
 
@@ -992,30 +1105,31 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
 
                 case 100:
                     ToolUtils.hiddenHUD();
-                    if(timer!=null){
+                    if (timer != null) {
                         timer.cancel();
                         timer = null;
                     }
 
-                    if(task!=null){
+                    if (task != null) {
                         task.cancel();
                     }
 
 //				HardwareControler.close(devfd);
                     upload_data.setEnabled(true);
+                    upload_data2.setEnabled(true);
                     //getUploadData();
                     //ClickUplaad();
                     break;
                 case 200:
-                    String result= (String) msg.obj;
+                    String result = (String) msg.obj;
                     if (result.contains("成功")) {
                         resultModel.uploadId = 1;
                         if (resultModel.update(new String[]{"uploadId"})) {
                             Toast.makeText(getApplicationContext(), "上传成功！", Toast.LENGTH_SHORT).show();
                         }
-                    } else if(result.contains("失败")) {
+                    } else if (result.contains("失败")) {
                         Toast.makeText(getApplicationContext(), "上传失败！", Toast.LENGTH_SHORT).show();
-                    }else{
+                    } else {
                         Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
                     }
             }
@@ -1024,6 +1138,7 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
 
     /**
      * 保存检测结果
+     *
      * @param result
      */
     public void saveCheck_ResultData(String result) {
@@ -1034,11 +1149,11 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
             testTime = GetCurrentTime();
             resultModel.number = testTime;
             resultModel.company_name = companySpinner.getSelectedItem().toString();
-            resultModel.persion = persionSpinner.getSelectedItem().toString();
+            resultModel.persion = persion_model.getName().toString();
 //			resultModel.shiji = shiji_model.getName();
-            resultModel.sample_name =  tv_check_sample.getText().toString();
+            resultModel.sample_name = tv_check_sample.getText().toString();
             resultModel.sample_number = et_Sample_Num.getText().toString();
-            resultModel.sample_type = typeSpinner.getSelectedItem().toString();
+            resultModel.sample_type = sampleNameSelected.sampleType;
             resultModel.project_name = selectedProject.getName();
 //            resultModel.sample_unit = sampleUnit_model.getName();
             resultModel.xian = etJcx.getText().toString();
@@ -1054,6 +1169,7 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
             resultModel.shiji = sampleUnitSpinner.getSelectedItem().toString();
             resultModel.twh = new Random().nextInt(100000) + "";
             upload_data.setEnabled(true);
+            upload_data2.setEnabled(true);
 
             db.save(resultModel);
 
@@ -1071,20 +1187,22 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
             message.what = 1;
             handlerTime.sendMessage(message);
         }
-    };
-    private MytaskTime tasktime ;
+    }
 
-    Timer timerRe =null;
-    TimerTask taskTime=null;
-    private int recLen=0;
+    ;
+    private MytaskTime tasktime;
 
-    Handler handlerTime = new Handler(){
+    Timer timerRe = null;
+    TimerTask taskTime = null;
+    private int recLen = 0;
+
+    Handler handlerTime = new Handler() {
         @Override
-        public void handleMessage(Message msg){
+        public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 1:
-                    move_time.setText(""+recLen+"S后开始检测");
-                    if(recLen < 0){
+                    move_time.setText("" + recLen + "S后开始检测");
+                    if (recLen < 0) {
                         taskTime.cancel();
                         timerRe.cancel();
                         timerRe = null;
@@ -1097,14 +1215,14 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
         }
     };
 
-    private boolean ValidateDataToTest(){
+    private boolean ValidateDataToTest() {
         if (company_model == null) {
             Toast.makeText(this, "请先选择检测单位", Toast.LENGTH_LONG).show();
             return false;
         }
 
         if (persion_model == null) {
-            Toast.makeText(this, "请先选择检验员", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "请先选择商户姓名", Toast.LENGTH_LONG).show();
             return false;
         }
 //		if (shiji_model == null) {
@@ -1115,28 +1233,28 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
             Toast.makeText(this, "请先填写样品名称", Toast.LENGTH_LONG).show();
             return false;
         }
-        if (type_model == null) {
-            Toast.makeText(this, "请先选样品类型", Toast.LENGTH_LONG).show();
-            return false;
-        }
+//        if (type_model == null) {
+//            Toast.makeText(this, "请先选样品类型", Toast.LENGTH_LONG).show();
+//            return false;
+//        }
 
         if (selectedProject == null) {
             Toast.makeText(this, "请先选择检测项目", Toast.LENGTH_LONG).show();
             return false;
         }
-        if(sampleUnit_model == null){
-            Toast.makeText(this, "请先选择商品来源", Toast.LENGTH_LONG).show();
+        if (sampleUnit_model == null) {
+            Toast.makeText(this, "请先选择摊位号", Toast.LENGTH_LONG).show();
             return false;
         }
 //		if(et_Sample_Num.getText().toString().trim().isEmpty()){
 //			Toast.makeText(this, "请输入样品编号", Toast.LENGTH_LONG).show();
 //			return false;
 //		}
-        if(TextUtils.isEmpty(selectedProject.card_name)
+        if (TextUtils.isEmpty(selectedProject.card_name)
                 || new Integer("0").equals(selectedProject.ScanEnd)
                 || new Integer("0").equals(selectedProject.ScanStart)
                 || new Integer("0").equals(selectedProject.CTWidth)
-                || new Integer("0").equals(selectedProject.CTDistance)){
+                || new Integer("0").equals(selectedProject.CTDistance)) {
             APPUtils.showToast(CheckActivity.this, "该检测项目参数不完整或不正确，请转至项目管理并重新编辑");
             return false;
         }
@@ -1159,7 +1277,7 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
 
     }
 
-    private void clearTestDataShow(){
+    private void clearTestDataShow() {
 
         etDr.setText("");
         etResult.setText("");
@@ -1168,20 +1286,38 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
 
     public void ClickStart(View v) {
 
-        if(!ValidateDataToTest()){
+        if (!ValidateDataToTest()) {
             return;
         }
         clearTestDataShow();
+        if (Global.isCodeDebug) {
+            String result = createResult();
+            parseResult(result);
+        } else {
+            String message = getTestInstruction();
+            readTimeOutCount = 0;
+            SendData(message);
+        }
+    }
 
-        String message = getTestInstruction();
-        readTimeOutCount = 0;
-        SendData(message);
+    private String createResult() {
+        int sou = selectedProject.source;
+        if (sou == 3) sou = 2;
+        String str = "";
+        if (sou == 1) {
+            //定量
+            str = "阴性,0.2";
+        } else {
+            str = "0.2,阴性";
+        }
+        str = "OK"+str;
+        return str;
     }
 
     private String getTestInstruction() {
 
         int sou = selectedProject.source;
-        if(sou == 3) sou = 2;
+        if (sou == 3) sou = 2;
         return "SendData" + "," + sou + ","
                 + selectedProject.getScanStart() + "," + selectedProject.getScanEnd() + ","
                 + selectedProject.getCTWidth() + "," + selectedProject.getCTDistance() + ","
@@ -1196,6 +1332,7 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
 
     /**
      * 打印数据
+     *
      * @param v
      */
     public void PrintInfo(View v) {
@@ -1203,74 +1340,74 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
             Toast.makeText(this, "请先检测", Toast.LENGTH_LONG).show();
             return;
         }
-        new AlertDialog.Builder(this)
-                .setMessage("是否打印二维码?")
-                .setTitle("提示")
-                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String message = null ;
-                        SimpleDateFormat formatter = new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss");
-                        Date curDate  = new Date(System.currentTimeMillis());//获取当前时间
-                        String time = formatter.format(curDate);
-                        String printData = null;
-                        printData = ToolUtils.GetPrintInfo(resultModel,CheckActivity.this, source);
-                        SerialUtils.COM4_SendData(BrightCommandM.t1b63(0));
-                        SerialUtils.COM4_SendData(BrightCommandM.t1b61(0));
-                        byte[] data = printData.getBytes(Charset.forName("gb2312"));
-                        if(!SerialUtils.COM4_SendData(data)){
-                            APPUtils.showToast(CheckActivity.this, "打印数据发送失败");
-                        }
-
-                        SerialUtils.COM4_SendData(BrightCommandM.t0A());
-                        SerialUtils.COM4_SendData(BrightCommandM.t0A());
-                        // 增加打印二维码
-                        SerialUtils.COM4_SendData(BrightCommandM.t1b61(1));
-                        SerialUtils.COM4_SendData(BrightCommandM.t1d77(2));
-                        SerialUtils.COM4_SendData(BrightCommandM.t1d28Qr(getData(resultModel, CheckActivity.this)));
-                        SerialUtils.COM4_SendData(BrightCommandM.t1d77(2));
-                        SerialUtils.COM4_SendData(BrightCommandM.t1b61(1));
-
-                        SerialUtils.COM4_SendData(BrightCommandM.t0A());
-                        SerialUtils.COM4_SendData(BrightCommandM.t0A());
-                        SerialUtils.COM4_SendData(BrightCommandM.t0A());
-                    }
-                })
-                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String message = null ;
-                        SimpleDateFormat formatter = new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss");
-                        Date curDate  = new Date(System.currentTimeMillis());//获取当前时间
+//        new AlertDialog.Builder(this)
+//                .setMessage("是否打印二维码?")
+//                .setTitle("提示")
+//                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        String message = null;
+                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        Date curDate = new Date(System.currentTimeMillis());//获取当前时间
                         String time = formatter.format(curDate);
                         String printData = null;
                         printData = ToolUtils.GetPrintInfo(resultModel, CheckActivity.this, source);
                         SerialUtils.COM4_SendData(BrightCommandM.t1b63(0));
                         SerialUtils.COM4_SendData(BrightCommandM.t1b61(0));
                         byte[] data = printData.getBytes(Charset.forName("gb2312"));
-                        if(!SerialUtils.COM4_SendData(data)){
+                        if (!SerialUtils.COM4_SendData(data)) {
                             APPUtils.showToast(CheckActivity.this, "打印数据发送失败");
                         }
 
-                        SerialUtils.COM4_SendData(BrightCommandM.t0A());
-                        SerialUtils.COM4_SendData(BrightCommandM.t0A());
-                        SerialUtils.COM4_SendData(BrightCommandM.t0A());
-                    }
-                })
-                .create().show();
+//                        SerialUtils.COM4_SendData(BrightCommandM.t0A());
+//                        SerialUtils.COM4_SendData(BrightCommandM.t0A());
+//                        // 增加打印二维码
+//                        SerialUtils.COM4_SendData(BrightCommandM.t1b61(1));
+//                        SerialUtils.COM4_SendData(BrightCommandM.t1d77(2));
+//                        SerialUtils.COM4_SendData(BrightCommandM.t1d28Qr(getData(resultModel, CheckActivity.this)));
+//                        SerialUtils.COM4_SendData(BrightCommandM.t1d77(2));
+//                        SerialUtils.COM4_SendData(BrightCommandM.t1b61(1));
+//
+//                        SerialUtils.COM4_SendData(BrightCommandM.t0A());
+//                        SerialUtils.COM4_SendData(BrightCommandM.t0A());
+//                        SerialUtils.COM4_SendData(BrightCommandM.t0A());
+//                    }
+//                })
+//                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        String message = null;
+//                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//                        Date curDate = new Date(System.currentTimeMillis());//获取当前时间
+//                        String time = formatter.format(curDate);
+//                        String printData = null;
+//                        printData = ToolUtils.GetPrintInfo(resultModel, CheckActivity.this, source);
+//                        SerialUtils.COM4_SendData(BrightCommandM.t1b63(0));
+//                        SerialUtils.COM4_SendData(BrightCommandM.t1b61(0));
+//                        byte[] data = printData.getBytes(Charset.forName("gb2312"));
+//                        if (!SerialUtils.COM4_SendData(data)) {
+//                            APPUtils.showToast(CheckActivity.this, "打印数据发送失败");
+//                        }
+//
+////                        SerialUtils.COM4_SendData(BrightCommandM.t0A());
+////                        SerialUtils.COM4_SendData(BrightCommandM.t0A());
+////                        SerialUtils.COM4_SendData(BrightCommandM.t0A());
+//                    }
+//                })
+//                .create().show();
     }
 
     private String getData(ResultModel result, Context context) {
         StringBuilder sb = new StringBuilder();
         sb.append("检测项目：" + result.project_name);
         sb.append("\n检测时间：" + ToolUtils.long2String(result.time,
-                "yyyy-MM-dd HH:mm:ss") );
+                "yyyy-MM-dd HH:mm:ss"));
         sb.append("\n样品名称：" + result.sample_name);
 
         sb.append("\n重量：" + result.weight + " kg");
         sb.append("\n样品编码：" + result.sample_number);
         sb.append("\n检测单位：" + result.company_name);
-        sb.append("\n商品来源:" + result.sample_unit);
+        sb.append("\n摊位号:" + result.sample_unit);
         sb.append("\n检测人员：" + result.persion);
         sb.append("\n临界值：" + result.lin);
         sb.append("\n限量标准：" + result.xian);
@@ -1287,27 +1424,27 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
     private int stopBits = 1;
     private int devfd = -1;
     private Timer timer = null;
-    private String dateCheck="";
-    private String timeCheck="";
+    private String dateCheck = "";
+    private String timeCheck = "";
 
     private void SendData(String message) {
 
         SimpleDateFormat formatterData = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat formatterTime = new SimpleDateFormat("HH:mm:ss");
         Date curDate = new Date(System.currentTimeMillis());//获取当前时间
-        dateCheck= formatterData.format(curDate);
-        timeCheck= formatterTime.format(curDate);
+        dateCheck = formatterData.format(curDate);
+        timeCheck = formatterTime.format(curDate);
         if (buf != null && buf.length > 0) {
             buf = null;
         }
-        if(strResultBuffer!=null&&strResultBuffer.length()>0){
-            strResultBuffer=null;
+        if (strResultBuffer != null && strResultBuffer.length() > 0) {
+            strResultBuffer = null;
         }
         buf = new byte[BUFSIZE];
-        strResultBuffer=new StringBuilder(256*200);
+        strResultBuffer = new StringBuilder(256 * 200);
 
         byte[] data = message.getBytes(Charset.forName("gb2312"));
-        if(!SerialUtils.COM3_SendData(data)){
+        if (!SerialUtils.COM3_SendData(data)) {
             APPUtils.showToast(this, "数据发送失败");
             return;
         }
@@ -1321,11 +1458,12 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
         timer.schedule(task, 4000, 2000);
     }
 
-    private MyTimerTask task ;
+    private MyTimerTask task;
+
     class MyTimerTask extends TimerTask {
         @Override
         public void run() {
-            if(readTimeOutCount++ > 3){
+            if (readTimeOutCount++ > 3) {
                 handler.sendEmptyMessage(100);
                 APPUtils.showToast(CheckActivity.this, "接收数据失败");
                 Log.d(TAG, "接收数据超时了，结束了本次数据接收");
@@ -1335,11 +1473,13 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
             Log.d(TAG, "发送handler信息");
             handlerMess.sendMessage(message);
         }
-    };
+    }
+
+    ;
     private final int BUFSIZE = 1024;
     private byte[] buf;
-    private StringBuilder strResultBuffer=null;
-    private String strResult=null;
+    private StringBuilder strResultBuffer = null;
+    private String strResult = null;
     private Handler handlerMess = new Handler() {
         @Override
         @SuppressLint("HandlerLeak")
@@ -1355,85 +1495,12 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
 
                             strResultOld = new String(buf, 0, retSize, Charset.forName("gbk"));
                             strResultBuffer.append(strResultOld);
-                            if(!strResultOld.endsWith("\n")){
+                            if (!strResultOld.endsWith("\n")) {
                                 return;
                             }
                             strResult = strResultBuffer.toString();
-                            strResult = strResult.replace("\n", "").replace("OK","");
-                            String check_resultTxt = "";
+                            parseResult(strResult);
 
-                            String[] data = strResult.split(",");
-                            if(data.length != 2){  //如果数据格式错误
-                                APPUtils.showToast(CheckActivity.this, "数据格式错误，接收数据失败");
-                                handler.sendEmptyMessage(100);
-                                return;
-                            }
-                            CalcAndShowTestResult(data);
-//						if (strResult.contains(",")) {
-//							check_resultTxt = strResult.substring(strResult.lastIndexOf(",") + 1);
-//							etResult.setText(check_resultTxt);
-//
-//							strResult = strResult.substring(0, strResult.indexOf(","));
-//							if (!(strResult != null && strResult.length() > 2)) {
-//								Toast.makeText(getApplicationContext(), "无效数据，重新检测", Toast.LENGTH_LONG).show();
-//								new Thread(new Runnable() {
-//
-//									@Override
-//									public void run() {
-//										SystemClock.sleep(500);
-//										handler.sendEmptyMessage(100);
-//									}
-//								}).start();
-//								return;
-//							} else {
-//								strResult = strResult.substring(2, strResult.length());
-//							}
-//
-//							Boolean isNumberResult = isNumeric(strResult);
-//							if (isNumberResult) {
-//								etDr.setText(strResult);
-//								etConcentrate.setText("0.000");
-//								saveCheck_ResultData(check_resultTxt);
-//								handler.sendEmptyMessage(100);
-//								Log.d(TAG, "检测成功");
-////									new Thread(new Runnable() {
-////
-////										@Override
-////										public void run() {
-////											SystemClock.sleep(500);
-////											handler.sendEmptyMessage(100);
-////										}
-////									}).start();
-//								return;
-//							}
-//							etDr.setText(strResult + "");
-//							if ((selectedProject.getA1() != null && selectedProject.getA1().length() > 0)) {
-//								double longStyle = Double.parseDouble(X0) * (Math.pow((((Double.parseDouble(A2) - Double.parseDouble(A1)) / (Double
-//										.parseDouble(A2) - Double.parseDouble(strResult))) - 1), (1 / Double.parseDouble(P))));
-//								Boolean isLongStyleResult = isNumeric(longStyle + "");
-//								if (isLongStyleResult) {
-//									etConcentrate.setText("0.000");
-//								} else {
-//									if (longStyle > 0) {
-//										DecimalFormat df = new DecimalFormat("#.000");
-//										etConcentrate.setText(df.format(longStyle) + "");
-//									} else {
-//										etConcentrate.setText("0.000");
-//									}
-//								}
-//							}
-//							saveCheck_ResultData(check_resultTxt);
-//							handler.sendEmptyMessage(100);
-//							Log.d(TAG, "检测成功");
-////								new Thread(new Runnable() {
-////
-////									@Override
-////									public void run() {
-////										SystemClock.sleep(500);
-////										handler.sendEmptyMessage(100);
-////									}
-////								}).start();
-//						}
                         }
                     }
 
@@ -1442,16 +1509,29 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
         }
     };
 
+    private void parseResult(String strResult) {
+        strResult = strResult.replace("\n", "").replace("OK", "");
+        String check_resultTxt = "";
+
+        String[] data = strResult.split(",");
+        if (data.length != 2) {  //如果数据格式错误
+            APPUtils.showToast(CheckActivity.this, "数据格式错误，接收数据失败");
+            handler.sendEmptyMessage(100);
+            return;
+        }
+        CalcAndShowTestResult(data);
+    }
+
     /**
      * 计算并显示检测结果
-     * @param data
-     * 检测值和检测结果组成的长度为2的字符串数组
+     *
+     * @param data 检测值和检测结果组成的长度为2的字符串数组
      */
-    private void CalcAndShowTestResult(String[] data){
+    private void CalcAndShowTestResult(String[] data) {
 
         etDr.setText(data[0]);
-        if("no signal".equals(data[0].toLowerCase())){  //无效的情况
-            if(source.equals("1")){  //定量
+        if ("no signal".equals(data[0].toLowerCase())) {  //无效的情况
+            if (source.equals("1")) {  //定量
                 etConcentrate.setText("0.000");
             }
             etResult.setText(data[1]);
@@ -1461,7 +1541,7 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
         float dr = 0.0f;
         try {
             dr = Float.parseFloat(data[0]);
-        }catch (NumberFormatException ex){
+        } catch (NumberFormatException ex) {
             APPUtils.showToast(CheckActivity.this, "数据格式错误，接收数据失败");//几乎不可能异常，除非下位机出现问题
             handler.sendEmptyMessage(100);//关闭定时器
             return;
@@ -1469,9 +1549,9 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
             e.printStackTrace();
         }
         try {
-            if(source.equals("1")){  //定量
+            if (source.equals("1")) {  //定量
                 double concentrate = 0.0;
-                if(!TextUtils.isEmpty(A1) && !TextUtils.isEmpty(A2)	&& !TextUtils.isEmpty(X0) && !TextUtils.isEmpty(P)){
+                if (!TextUtils.isEmpty(A1) && !TextUtils.isEmpty(A2) && !TextUtils.isEmpty(X0) && !TextUtils.isEmpty(P)) {
 
                     concentrate = Double.parseDouble(X0) * (Math.pow((((Double.parseDouble(A2) - Double.parseDouble(A1)) / (Double
                             .parseDouble(A2) - dr)) - 1), (1 / Double.parseDouble(P))));
@@ -1480,15 +1560,15 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
                     String s = df.format(concentrate);
                     concentrate = Double.parseDouble(s);
                     etConcentrate.setText(concentrate + "");
-                    if(Double.parseDouble(selectedProject.Jcx) > concentrate){
+                    if (Double.parseDouble(selectedProject.Jcx) > concentrate) {
                         etResult.setText("合格");
-                    }else{
+                    } else {
                         etResult.setText("不合格");
                     }
-                }else{  //定量检测中用户对进行检测的项目没有设置四参数的情况，该情况下，检测结果显示下位机收到的阴阳性结果
+                } else {  //定量检测中用户对进行检测的项目没有设置四参数的情况，该情况下，检测结果显示下位机收到的阴阳性结果
                     etResult.setText(data[1]);
                 }
-            }else{  //定性
+            } else {  //定性
                 etResult.setText(data[1]);
             }
         } catch (NumberFormatException e) {
@@ -1556,7 +1636,7 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
     /**
      * 显示抽样时间dialog
      */
-    private void ShowSampleTimeDialog(){
+    private void ShowSampleTimeDialog() {
 
         final Calendar c = Calendar.getInstance();
         // 最后一个false表示不显示日期，如果要显示日期，最后参数可以是true或者不用输入
@@ -1582,7 +1662,7 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
         return textString;
     }
 
-    private String GetCurrentTime(){
+    private String GetCurrentTime() {
 
         Date now = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");// 可以方便地修改日期格式

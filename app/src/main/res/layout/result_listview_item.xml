@@ -70,7 +70,7 @@
         android:layout_width="0dp"
         android:layout_height="40dp"
         android:gravity="center"
-        android:text="商品来源"
+        android:text="摊位号"
         android:textSize="16sp" />
 
     <View

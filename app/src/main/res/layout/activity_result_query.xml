@@ -82,7 +82,7 @@
                     style="@style/CheckBox_ResultQuery"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="被检单位:" />
+                    android:text="商户姓名:" />
 
                 <Spinner
                     android:id="@+id/spn_checked_organization"
@@ -148,7 +148,7 @@
                     style="@style/CheckBox_ResultQuery"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="商品来源:" />
+                    android:text="摊位号:" />
 
                 <Spinner
                     android:id="@+id/spn_sample_source"
@@ -291,6 +291,11 @@
 
         <Button
             android:id="@+id/btn_upload"
+            style="@style/BtnBottom"
+            android:visibility="gone"
+            android:text="上传(泉州食安)" />
+        <Button
+            android:id="@+id/btn_upload2"
             style="@style/BtnBottom"
             android:text="上传" />
 

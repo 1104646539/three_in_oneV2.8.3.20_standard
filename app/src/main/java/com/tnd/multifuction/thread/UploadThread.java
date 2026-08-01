@@ -43,13 +43,15 @@ import okhttp3.ResponseBody;
 
 import static com.tnd.multifuction.util.ToolUtils.isNumericZidai;
 
+/**
+ * 泉州食安
+ */
 public class UploadThread extends Thread {
 
     private static final String TAG = "UploadThread";
     private Context context;
     private onUploadListener listener;
     private List<CheckResult> list;
-    private List<HjData.Items> arr;
 
     public UploadThread(Context context, List<CheckResult> list, onUploadListener listener) {
 
@@ -64,15 +66,16 @@ public class UploadThread extends Thread {
         Log.d(TAG, "获取到的list=" + list.size());
         try {
             for (int i = 0; i < list.size(); i++) {
+                if(!list.get(i).isSelected) continue;
                 Thread.sleep(300);
                 String content = ToolUtils.assemblyUploadData(list.get(i));
-                Log.d("",""+TextUtils.isEmpty(content));
+                Log.d(TAG,""+TextUtils.isEmpty(content));
                 if(!TextUtils.isEmpty(content)){
                     if (TextUtils.isEmpty(content) && listener != null) {
                         listener.onFail("设备ID或上传地址为空，请输入后重新上传");
                         return;
                     }
-                    Log.d("","String content:"+content);
+                    Log.d(TAG,"String content:"+content);
 //                APPUtils.showToast((Activity) context, content);
                     OkHttpClient okHttpClient = new OkHttpClient();
 
@@ -92,14 +95,14 @@ public class UploadThread extends Thread {
                             if (listener != null) {
                                 listener.onFail(e.getMessage());
                             }
-                            Log.d("失败", e.toString());
+                            Log.d(TAG, e.toString());
                             APPUtils.showToast((Activity) context, e.toString());
                         }
 
                         @Override
                         public void onResponse(Call call, Response response) throws IOException {
                             String result = response.body().string();
-                            Log.d("成功",result);
+                            Log.d(TAG,result);
                             if (listener != null) {
                                 if (result.contains("上传成功")) {
                                     listener.onSuccess(list, 1, finalI, result);

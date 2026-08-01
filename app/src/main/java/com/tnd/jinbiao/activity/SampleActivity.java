@@ -199,7 +199,7 @@ public class SampleActivity extends BaseActivity {
 			public void onClick(View arg0) {
 
 				if (messagetf.getText().toString().length() <= 0) {
-					Toast.makeText(getApplicationContext(), "请输入样品名称",
+					Toast.makeText(getApplicationContext(), "请输入商户姓名",
 							Toast.LENGTH_LONG).show();
 					return;
 				}

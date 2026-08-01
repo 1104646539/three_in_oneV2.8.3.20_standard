@@ -173,8 +173,8 @@
     <style name="btn_baseData_style">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:layout_marginLeft">20dp</item>
-        <item name="android:layout_marginRight">20dp</item>
+        <item name="android:layout_marginLeft">10dp</item>
+        <item name="android:layout_marginRight">10dp</item>
         <item name="android:background">@drawable/btn_default1</item>
         <item name="android:layout_weight">1.0</item>
         <item name="android:textSize">20sp</item>

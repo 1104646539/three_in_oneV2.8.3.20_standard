@@ -75,6 +75,7 @@ import com.tnd.multifuction.model.CheckResult;
 import com.tnd.multifuction.model.FiltrateModel;
 import com.tnd.multifuction.model.SampleName;
 import com.tnd.multifuction.thread.UploadThread;
+import com.tnd.multifuction.thread.UploadThread2;
 import com.tnd.multifuction.util.BrightCommandM;
 import com.tnd.multifuction.util.Global;
 import com.tnd.multifuction.util.SerialUtils;
@@ -138,7 +139,7 @@ public class ResultActivity extends BaseActivity implements ResultAdapterT.OnSel
     public ShiJiModel shiji_model = null;
     private List<ResultModel> result_list = null;
 
-    private List<ResultModel> upload_list =new ArrayList<ResultModel>();
+    private List<ResultModel> upload_list = new ArrayList<ResultModel>();
 
     private CheckBox activity_result_checkbox_name;
     private CheckBox activity_result_checkbox_shiji;
@@ -154,7 +155,7 @@ public class ResultActivity extends BaseActivity implements ResultAdapterT.OnSel
 
 
     private final static String EXPORT_DIR = "/胶体金检测/";
-    private final static String[] EXCEL_HEADER = {"检测时间","样品编号", "商品名称", "检测项目", "检测值", "检测结果", "被检单位", "检测人员", "商品来源", "重量（kg）", "上传状态"};
+    private final static String[] EXCEL_HEADER = {"检测时间", "样品编号", "商品名称", "检测项目", "检测值", "检测结果", "商户姓名", "检测人员", "摊位号", "重量（kg）", "上传状态"};
     private ProgressDialog waitDialog;
 
 
@@ -166,13 +167,14 @@ public class ResultActivity extends BaseActivity implements ResultAdapterT.OnSel
     private EditText et_weight;
     private EditText et_content;
     private FiltrateAdapter filtrateAdapter;
-    private SimpleDateFormat formatterData;;
+    private SimpleDateFormat formatterData;
+    ;
     private Button btn_back;
     static List<SampleName> sampleNames_s = new ArrayList<>();//样品名称
     static List<SampleName> sampleNames;
     private String[] sampleName_s = null;
     private EditText et_Sample_Num = null;
-    private EditText et_SampleTime= null;
+    private EditText et_SampleTime = null;
 
     private TextView tv_alis;
 
@@ -191,6 +193,7 @@ public class ResultActivity extends BaseActivity implements ResultAdapterT.OnSel
         listview.setAdapter(adapter);
         query();
     }
+
     private void showDeleteDialog(final int position) {
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -312,11 +315,11 @@ public class ResultActivity extends BaseActivity implements ResultAdapterT.OnSel
             project_name[0] = "请先添加检测项目";
         }
 
-        company_adapter = new ArrayAdapter<String>(ResultActivity.this,	R.layout.item_simple_spiner, company_list);
+        company_adapter = new ArrayAdapter<String>(ResultActivity.this, R.layout.item_simple_spiner, company_list);
 
-        project_adapter = new ArrayAdapter<String>(ResultActivity.this,	R.layout.item_simple_spiner, project_name);
-        shiji_adapter = new ArrayAdapter<String>(ResultActivity.this,R.layout.item_simple_spiner, shiji_list);
-        persion_adapter = new ArrayAdapter<String>(ResultActivity.this,	R.layout.item_simple_spiner, persion_list);
+        project_adapter = new ArrayAdapter<String>(ResultActivity.this, R.layout.item_simple_spiner, project_name);
+        shiji_adapter = new ArrayAdapter<String>(ResultActivity.this, R.layout.item_simple_spiner, shiji_list);
+        persion_adapter = new ArrayAdapter<String>(ResultActivity.this, R.layout.item_simple_spiner, persion_list);
         sample_adapter = new ArrayAdapter<String>(ResultActivity.this, R.layout.item_simple_spiner, sample_list);
         type_adapter = new ArrayAdapter<String>(ResultActivity.this, R.layout.item_simple_spiner, type_list);
         resultAdapter = new ArrayAdapter<String>(ResultActivity.this, R.layout.item_simple_spiner, getResources().getStringArray(R.array.check_company_name));
@@ -448,6 +451,7 @@ public class ResultActivity extends BaseActivity implements ResultAdapterT.OnSel
 
     /**
      * 获取查询条件
+     *
      * @param whereBuilder
      * @return
      */
@@ -501,8 +505,8 @@ public class ResultActivity extends BaseActivity implements ResultAdapterT.OnSel
     }
 
     public void PrintInfo(View v) {
-        List<ResultModel> resultModelList =  adapter.getSelectList();
-        if(resultModelList ==null || resultModelList.size() == 0){
+        List<ResultModel> resultModelList = adapter.getSelectList();
+        if (resultModelList == null || resultModelList.size() == 0) {
             Toast.makeText(ResultActivity.this, "请先选择要打印的数据!", Toast.LENGTH_LONG).show();
             return;
         }
@@ -511,71 +515,71 @@ public class ResultActivity extends BaseActivity implements ResultAdapterT.OnSel
             return;
         }*/
 
-        new AlertDialog.Builder(this)
-                .setMessage("是否打印二维码?")
-                .setTitle("提示")
-                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        for(int i=0;i<resultModelList.size();i++){
-                            ResultModel resultModel=resultModelList.get(i);
+//        new AlertDialog.Builder(this)
+//                .setMessage("是否打印二维码?")
+//                .setTitle("提示")
+//                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+                        for (int i = 0; i < resultModelList.size(); i++) {
+                            ResultModel resultModel = resultModelList.get(i);
                             String id = resultModel.id + "";
                             String printData = ToolUtils.GetPrintInfo(resultModel, ResultActivity.this);
                             APPUtils.showToast(ResultActivity.this, printData);
                             SerialUtils.COM4_SendData(BrightCommandM.t1b63(0));
                             SerialUtils.COM4_SendData(BrightCommandM.t1b61(0));
                             byte[] data = printData.getBytes(Charset.forName("gb2312"));
-                            if(!SerialUtils.COM4_SendData(data)){
+                            if (!SerialUtils.COM4_SendData(data)) {
                                 APPUtils.showToast(ResultActivity.this, "打印数据发送失败");
                             }
                             SerialUtils.COM4_SendData(BrightCommandM.t0A());
                             // 增加打印二维码
-                            SerialUtils.COM4_SendData(BrightCommandM.t1b61(1));
-                            SerialUtils.COM4_SendData(BrightCommandM.t1d77(2));
-                            SerialUtils.COM4_SendData(BrightCommandM.t1d28Qr(getResultData(resultModel)));
-                            SerialUtils.COM4_SendData(BrightCommandM.t1d77(2));
-                            SerialUtils.COM4_SendData(BrightCommandM.t1b61(1));
-
-                            SerialUtils.COM4_SendData(BrightCommandM.t0A());
-                            SerialUtils.COM4_SendData(BrightCommandM.t1b61(0));
-                            SerialUtils.COM4_SendData(BrightCommandM.t0A());
-                            SerialUtils.COM4_SendData(BrightCommandM.t0A());
-
-                            SerialUtils.COM4_SendData(BrightCommandM.t0A());
+//                            SerialUtils.COM4_SendData(BrightCommandM.t1b61(1));
+//                            SerialUtils.COM4_SendData(BrightCommandM.t1d77(2));
+//                            SerialUtils.COM4_SendData(BrightCommandM.t1d28Qr(getResultData(resultModel)));
+//                            SerialUtils.COM4_SendData(BrightCommandM.t1d77(2));
+//                            SerialUtils.COM4_SendData(BrightCommandM.t1b61(1));
+//
+//                            SerialUtils.COM4_SendData(BrightCommandM.t0A());
+//                            SerialUtils.COM4_SendData(BrightCommandM.t1b61(0));
+//                            SerialUtils.COM4_SendData(BrightCommandM.t0A());
+//                            SerialUtils.COM4_SendData(BrightCommandM.t0A());
+//
+//                            SerialUtils.COM4_SendData(BrightCommandM.t0A());
                         }
-                    }
-                })
-                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        for(int i=0;i<resultModelList.size();i++){
-                            ResultModel resultModel=resultModelList.get(i);
-                            String id = resultModel.id + "";
-                            String printData = ToolUtils.GetPrintInfo(resultModel, ResultActivity.this);
-                            APPUtils.showToast(ResultActivity.this, printData);
-                            SerialUtils.COM4_SendData(BrightCommandM.t1b63(0));
-                            SerialUtils.COM4_SendData(BrightCommandM.t1b61(0));
-                            byte[] data = printData.getBytes(Charset.forName("gb2312"));
-                            if(!SerialUtils.COM4_SendData(data)){
-                                APPUtils.showToast(ResultActivity.this, "打印数据发送失败");
-                            }
-                        /*SerialUtils.COM4_SendData(BrightCommandM.t0A());
-                        // 增加打印二维码
-                        SerialUtils.COM4_SendData(BrightCommandM.t1b61(1));
-                        SerialUtils.COM4_SendData(BrightCommandM.t1d77(2));
-                        SerialUtils.COM4_SendData(BrightCommandM.t1d28Qr(getResultData(selectResultMode)));
-                        SerialUtils.COM4_SendData(BrightCommandM.t1d77(2));
-                        SerialUtils.COM4_SendData(BrightCommandM.t1b61(1));
-                        SerialUtils.COM4_SendData(BrightCommandM.t0A());
-                        SerialUtils.COM4_SendData(BrightCommandM.t1b61(0));*/
-                            SerialUtils.COM4_SendData(BrightCommandM.t0A());
-                            SerialUtils.COM4_SendData(BrightCommandM.t0A());
-                            SerialUtils.COM4_SendData(BrightCommandM.t0A());
-                        }
-
-                    }
-                })
-                .create().show();
+//                    }
+//                })
+//                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        for (int i = 0; i < resultModelList.size(); i++) {
+//                            ResultModel resultModel = resultModelList.get(i);
+//                            String id = resultModel.id + "";
+//                            String printData = ToolUtils.GetPrintInfo(resultModel, ResultActivity.this);
+//                            APPUtils.showToast(ResultActivity.this, printData);
+//                            SerialUtils.COM4_SendData(BrightCommandM.t1b63(0));
+//                            SerialUtils.COM4_SendData(BrightCommandM.t1b61(0));
+//                            byte[] data = printData.getBytes(Charset.forName("gb2312"));
+//                            if (!SerialUtils.COM4_SendData(data)) {
+//                                APPUtils.showToast(ResultActivity.this, "打印数据发送失败");
+//                            }
+//                        /*SerialUtils.COM4_SendData(BrightCommandM.t0A());
+//                        // 增加打印二维码
+//                        SerialUtils.COM4_SendData(BrightCommandM.t1b61(1));
+//                        SerialUtils.COM4_SendData(BrightCommandM.t1d77(2));
+//                        SerialUtils.COM4_SendData(BrightCommandM.t1d28Qr(getResultData(selectResultMode)));
+//                        SerialUtils.COM4_SendData(BrightCommandM.t1d77(2));
+//                        SerialUtils.COM4_SendData(BrightCommandM.t1b61(1));
+//                        SerialUtils.COM4_SendData(BrightCommandM.t0A());
+//                        SerialUtils.COM4_SendData(BrightCommandM.t1b61(0));*/
+//                            SerialUtils.COM4_SendData(BrightCommandM.t0A());
+//                            SerialUtils.COM4_SendData(BrightCommandM.t0A());
+//                            SerialUtils.COM4_SendData(BrightCommandM.t0A());
+//                        }
+//
+//                    }
+//                })
+//                .create().show();
 
        /* String id = selectResultMode.id + "";
         String printData = ToolUtils.GetPrintInfo(selectResultMode, this);
@@ -606,13 +610,13 @@ public class ResultActivity extends BaseActivity implements ResultAdapterT.OnSel
         StringBuilder sb = new StringBuilder();
         sb.append("检测项目：" + result.project_name);
         sb.append("\n检测时间：" + ToolUtils.long2String(result.time,
-                "yyyy-MM-dd HH:mm:ss") );
+                "yyyy-MM-dd HH:mm:ss"));
         sb.append("\n样品名称：" + result.sample_name);
 
         sb.append("\n重量：" + result.weight + " kg");
         sb.append("\n样品编码：" + result.sample_number);
         sb.append("\n检测单位：" + result.company_name);
-        sb.append("\n商品来源:" + result.sample_unit);
+        sb.append("\n摊位号:" + result.sample_unit);
         sb.append("\n检测人员：" + result.persion);
         sb.append("\n临界值：" + result.lin);
         sb.append("\n限量标准：" + result.xian);
@@ -810,6 +814,7 @@ public class ResultActivity extends BaseActivity implements ResultAdapterT.OnSel
                             filtrateAdapter.setData(filter(str, sampleNames));
                         }
                     }
+
                     private List<SampleName> filter(String str, List<SampleName> data) {
                         Iterator<SampleName> iterable = data.iterator();
                         while (iterable.hasNext()) {
@@ -832,9 +837,6 @@ public class ResultActivity extends BaseActivity implements ResultAdapterT.OnSel
         tv_checkactivity_sampleunit.setVisibility(View.GONE);*/
 
 
-
-
-
     }
 
     public void ClickQuery(View v) {
@@ -842,7 +844,7 @@ public class ResultActivity extends BaseActivity implements ResultAdapterT.OnSel
     }
 
     public void ClickClear(View v) {
-        if ( adapter.getSelectList().size() == 0) {
+        if (adapter.getSelectList().size() == 0) {
             Toast.makeText(ResultActivity.this, "请先选中数据!", Toast.LENGTH_LONG).show();
             return;
         }
@@ -908,6 +910,7 @@ public class ResultActivity extends BaseActivity implements ResultAdapterT.OnSel
     }
 
     private ResultModel selectedResult;
+
     public void ClickUploadData(View v) {
         upload_list.clear();
         List<ResultModel> resultModelList = adapter.getSelectList();
@@ -916,7 +919,7 @@ public class ResultActivity extends BaseActivity implements ResultAdapterT.OnSel
             APPUtils.showToast(this, "请先连接网络");
             return;
         }
-        if(resultModelList ==null || resultModelList.size() == 0){
+        if (resultModelList == null || resultModelList.size() == 0) {
             Toast.makeText(ResultActivity.this, "请先选中数据!", Toast.LENGTH_LONG).show();
             return;
         }
@@ -931,19 +934,24 @@ public class ResultActivity extends BaseActivity implements ResultAdapterT.OnSel
 
         isUploading = true;
         List<CheckResult> list = new ArrayList<>();
-        for(int i=0;i<resultModelList.size();i++){
+        for (int i = 0; i < resultModelList.size(); i++) {
             CheckResult checkResult = new CheckResult();
-            checkResult.sampleName = resultModelList.get(i).sample_name;;//样品名称
-            checkResult.projectName = resultModelList.get(i).project_name;;//检测项目
-            checkResult.testTime = resultModelList.get(i).time;;//检测时间
-            checkResult.twh = resultModelList.get(i).sample_unit;;//样
+            checkResult.sampleName = resultModelList.get(i).sample_name;
+            ;//样品名称
+            checkResult.projectName = resultModelList.get(i).project_name;
+            ;//检测项目
+            checkResult.testTime = resultModelList.get(i).time;
+            ;//检测时间
+            checkResult.twh = resultModelList.get(i).sample_unit;
+            ;//样
 
-            checkResult.weight = resultModelList.get(i).weight;;//重量
+            checkResult.weight = resultModelList.get(i).weight;
+            ;//重量
             if ("阴性".equals(resultModelList.get(i).check_result)) {
                 checkResult.resultJudge = "合格";
-            } else if ("阳性".equals(resultModelList.get(i).check_result)){
+            } else if ("阳性".equals(resultModelList.get(i).check_result)) {
                 checkResult.resultJudge = "不合格";
-            }else{
+            } else {
                 checkResult.resultJudge = resultModelList.get(i).check_result;//检测结果
             }
             checkResult.testValue = resultModelList.get(i).check_value;//检测值
@@ -960,11 +968,105 @@ public class ResultActivity extends BaseActivity implements ResultAdapterT.OnSel
                     APPUtils.showToast(ResultActivity.this, "上传数据成功");
                 }
             }
+
             @Override
             public void onFail(String failInfo) {
                 if (!act.isFinishing()) {
                     mHandler.obtainMessage(ToolUtils.upload_fail, failInfo).sendToTarget();
                 }
+            }
+        });
+        t.start();
+    }
+
+    public void ClickUploadData2(View v) {
+        upload_list.clear();
+        List<ResultModel> resultModelList = adapter.getSelectList();
+        upload_list = resultModelList;
+        if (!ToolUtils.isNetworkConnected(this)) {
+            APPUtils.showToast(this, "请先连接网络");
+            return;
+        }
+        if (resultModelList == null || resultModelList.size() == 0) {
+            Toast.makeText(ResultActivity.this, "请先选中数据!", Toast.LENGTH_LONG).show();
+            return;
+        }
+        /*if (selectedResult == null) {
+            APPUtils.showToast(this, "请先选中数据");
+            return;
+        }*/
+        if (isUploading) {
+            APPUtils.showToast(this, "正在上传数据，请稍后...");
+            return;
+        }
+
+        isUploading = true;
+        List<CheckResult> list = new ArrayList<>();
+        for (int i = 0; i < resultModelList.size(); i++) {
+            CheckResult checkResult = new CheckResult();
+            checkResult.isSelected = true;
+            checkResult.id = resultModelList.get(i).id;
+            checkResult.bcheckedOrganization = resultModelList.get(i).persion;
+            ;//商户姓名
+            checkResult.sampleSource = resultModelList.get(i).orgin;
+            ;//摊位号
+            checkResult.sampleName = resultModelList.get(i).sample_name;
+            ;//样品名称
+            checkResult.sampleType = resultModelList.get(i).sample_type;
+            ;//样品名称
+            checkResult.projectName = resultModelList.get(i).project_name;
+            ;//检测项目
+            checkResult.testTime = resultModelList.get(i).time;
+            ;//检测时间
+            checkResult.twh = resultModelList.get(i).sample_unit;
+            ;//样
+
+            checkResult.weight = resultModelList.get(i).weight;
+            ;//重量
+            if ("阴性".equals(resultModelList.get(i).check_result)) {
+                checkResult.resultJudge = "合格";
+            } else if ("阳性".equals(resultModelList.get(i).check_result)) {
+                checkResult.resultJudge = "不合格";
+            } else {
+                checkResult.resultJudge = resultModelList.get(i).check_result;//检测结果
+            }
+            checkResult.testValue = resultModelList.get(i).check_value;//检测值
+//            checkResult.sampleSource = resultModelList.get(i).sample_unit;
+            list.add(checkResult);
+        }
+        UploadThread2 t = new UploadThread2(this, list, new UploadThread2.onUploadListener() {
+            @Override
+            public void onSuccess(List<CheckResult> list, int returnId, int position, String result) {
+                if (!act.isFinishing()) {
+                    APPUtils.showToast(act, "上传成功");
+                    try {
+                        ResultModel rm = db.findById(ResultModel.class, list.get(position).id);
+                        rm.uploadId = 1;
+                        db.saveOrUpdate(rm);
+                        runOnUiThread(()->{
+                            query();
+                        });
+                    } catch (DbException e) {
+                        throw new RuntimeException(e);
+                    }
+//                    list.get(position).uploadId = 1;
+//                    try {
+//                        db.save(list.get(position).uploadId);
+//                    } catch (DbException e) {
+//                        throw new RuntimeException(e);
+//                    }
+////                    list.get(position).saveOrUpdate(list.get(position));
+                }
+                isUploading = false;
+
+            }
+
+            @Override
+            public void onFail(String failInfo) {
+                if (!act.isFinishing()) {
+                    runOnUiThread(() -> APPUtils.showToast(act, failInfo));
+                }
+                isUploading = false;
             }
         });
         t.start();
@@ -1095,11 +1197,12 @@ public class ResultActivity extends BaseActivity implements ResultAdapterT.OnSel
 
     /**
      * 导出数据
+     *
      * @param view
      */
     public void ClickExportData(View view) {
         if (result_list == null || result_list.size() == 0) {
-            APPUtils.showToast(ResultActivity.this,"无数据导出！！！");
+            APPUtils.showToast(ResultActivity.this, "无数据导出！！！");
             return;
         }
 
@@ -1199,7 +1302,7 @@ public class ResultActivity extends BaseActivity implements ResultAdapterT.OnSel
                 sheet.addCell(new Label(i, 3, EXCEL_HEADER[i], headerCellFormat));
             }
 
-            //{"检测单位","检验员", "样品名称", "检测项目名", "商品来源","检测值",  "检测结果"};
+            //{"检测单位","检验员", "样品名称", "检测项目名", "摊位号","检测值",  "检测结果"};
             if (result_list != null) {
                 for (int i = 0; i < result_list.size(); i++) {
                     ResultModel result = result_list.get(i);
@@ -1210,10 +1313,10 @@ public class ResultActivity extends BaseActivity implements ResultAdapterT.OnSel
                     sheet.addCell(new Label(3, lineIdx, result.project_name, defaultCellFormat)); //检测项目
                     sheet.addCell(new Label(4, lineIdx, result.check_value, defaultCellFormat)); //检测值
                     sheet.addCell(new Label(5, lineIdx, result.check_result, defaultCellFormat)); //检测结果
-                    sheet.addCell(new Label(6, lineIdx, result.company_name, defaultCellFormat)); //被检单位
+                    sheet.addCell(new Label(6, lineIdx, result.company_name, defaultCellFormat)); //商户姓名
 
                     sheet.addCell(new Label(7, lineIdx, result.persion, defaultCellFormat)); //检测人员
-                    sheet.addCell(new Label(8, lineIdx, result.orgin, defaultCellFormat)); //商品来源
+                    sheet.addCell(new Label(8, lineIdx, result.orgin, defaultCellFormat)); //摊位号
                     sheet.addCell(new Label(9, lineIdx, result.weight, defaultCellFormat)); //重量
                     Log.d("uploadId", result.uploadId + "");
                     sheet.addCell(new Label(10, lineIdx, result.uploadId == 0 ? "未上传" : "已上传", defaultCellFormat)); //上传状态

@@ -1,7 +1,7 @@
 package com.tnd.multifuction.model;
 
 /**
- * 商品来源
+ * 摊位号
  */
 public class SampleSource extends UserInputModel<SampleSource> implements FiltrateModel{
     //id

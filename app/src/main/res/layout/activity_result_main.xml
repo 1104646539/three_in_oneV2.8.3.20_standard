@@ -273,6 +273,7 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:visibility="gone"
             android:layout_weight="1.0"
             android:orientation="horizontal">
 
@@ -548,8 +549,14 @@
 
         <Button
             style="@style/btn_baseData_style"
+            android:visibility="gone"
             android:onClick="ClickUploadData"
-            android:text="上传数据"
+            android:text="上传(泉州食安)"
+            />
+        <Button
+            style="@style/btn_baseData_style"
+            android:onClick="ClickUploadData2"
+            android:text="上传"
             />
         <Button
             android:id="@+id/btn_export_data"

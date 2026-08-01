@@ -120,7 +120,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="4"
                 android:gravity="center"
-                android:text="被检单位"
+                android:text="商户姓名"
                 android:textColor="@android:color/black"
                 android:textSize="28sp" />
 
@@ -129,7 +129,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="5"
                 android:gravity="center"
-                android:text="商品来源"
+                android:text="摊位号"
                 android:textColor="@android:color/black"
                 android:textSize="28sp" />
 

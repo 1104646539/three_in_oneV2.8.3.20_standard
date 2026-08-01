@@ -82,8 +82,8 @@ public class CheckProjectCompanyActivity extends BaseActivity {
             title.setText("检测单位编辑");
             name.setText("检测单位名称");
         } else if (source == CHECKER) {
-            title.setText("检验员编辑");
-            name.setText("检验员名称");
+            title.setText("商户姓名编辑");
+            name.setText("商户姓名名称");
         } else {
             title.setText("商户（摊位）编辑");
             name.setText("商户（摊位）名称");

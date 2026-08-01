@@ -53,7 +53,7 @@ import okhttp3.Response;
 
 public class EditDataDialog<T> extends Dialog {
     /**
-     * 被检测单位
+     * 商户姓名
      */
     public static final int DIALOG_TYPE_BCHEKEORG = 1000;
     /**
@@ -61,7 +61,7 @@ public class EditDataDialog<T> extends Dialog {
      */
     public static final int DIALOG_TYPE_CHECKORG = 1001;
     /**
-     * 商品来源
+     * 摊位号
      */
     public static final int DIALOG_TYPE_SAMPLESOURCE = 1002;
     /**
@@ -128,7 +128,7 @@ public class EditDataDialog<T> extends Dialog {
             recyclerView.setLayoutManager(manager);
             recyclerView.setAdapter(dialogSelectAdapter);
         }
-        if (type == DIALOG_TYPE_BCHEKEORG) {//被检测单位
+        if (type == DIALOG_TYPE_BCHEKEORG) {//商户姓名
             dialogSelectAdapter.setSelect(false);
             bCheckOrgs = new BCheckOrg().findAll();
             dialogSelectAdapter.dataChange(bCheckOrgs);
@@ -166,7 +166,7 @@ public class EditDataDialog<T> extends Dialog {
 
                 });
             }
-        } else if (type == DIALOG_TYPE_SAMPLESOURCE) {//商品来源
+        } else if (type == DIALOG_TYPE_SAMPLESOURCE) {//摊位号
             dialogSelectAdapter.setSelect(false);
             /*btn_add.setVisibility(View.GONE);
             btn_del.setVisibility(View.GONE);
@@ -331,7 +331,7 @@ public class EditDataDialog<T> extends Dialog {
                     Toast.makeText(context, "添加失败", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if (type == DIALOG_TYPE_BCHEKEORG) {//被检测单位
+                if (type == DIALOG_TYPE_BCHEKEORG) {//商户姓名
                     if (new BCheckOrg().save(new BCheckOrg(str))) {//保存成功
                         bCheckOrgs = new BCheckOrg().findAll();
                         dialogSelectAdapter.dataChange(bCheckOrgs);
@@ -344,7 +344,7 @@ public class EditDataDialog<T> extends Dialog {
                         dialogSelectAdapter.dataChange(checkOrgs);
                     }
                     Toast.makeText(context, "添加成功", Toast.LENGTH_SHORT).show();
-                } else if (type == DIALOG_TYPE_SAMPLESOURCE) {//商品来源
+                } else if (type == DIALOG_TYPE_SAMPLESOURCE) {//摊位号
                     if (new SampleSource().save(new SampleSource(str))) {//保存成功
                         sampleSources = new SampleSource().findAll();
                         dialogSelectAdapter.dataChange(sampleSources);
@@ -374,7 +374,7 @@ public class EditDataDialog<T> extends Dialog {
                     Toast.makeText(context, "请选择删除项目", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if (type == DIALOG_TYPE_BCHEKEORG) {//被检测单位
+                if (type == DIALOG_TYPE_BCHEKEORG) {//商户姓名
                     if (new BCheckOrg().delete((BCheckOrg) filtrateModel)) {//保存成功
                         bCheckOrgs = new BCheckOrg().findAll();
                         dialogSelectAdapter.dataChange(bCheckOrgs);
@@ -386,7 +386,7 @@ public class EditDataDialog<T> extends Dialog {
                         dialogSelectAdapter.dataChange(checkOrgs);
                     }
                     Toast.makeText(context, "删除成功", Toast.LENGTH_SHORT).show();
-                } else if (type == DIALOG_TYPE_SAMPLESOURCE) {//商品来源
+                } else if (type == DIALOG_TYPE_SAMPLESOURCE) {//摊位号
                     if (new SampleSource().delete((SampleSource) filtrateModel)) {//保存成功
                         sampleSources = new SampleSource().findAll();
                         dialogSelectAdapter.dataChange(sampleSources);
@@ -423,7 +423,7 @@ public class EditDataDialog<T> extends Dialog {
                 }
                 String changeName = et_content.getText().toString().trim();
 
-                if (type == DIALOG_TYPE_BCHEKEORG) {//被检测单位
+                if (type == DIALOG_TYPE_BCHEKEORG) {//商户姓名
 //                    new BCheckOrg().saveOrUpdate((BCheckOrg) filtrateModel);
                     bCheckOrgs.get(dialogSelectAdapter.getSelectPosition()).bco_name = changeName;
                     new BCheckOrg().saveOrUpdate(bCheckOrgs.get(dialogSelectAdapter.getSelectPosition()));
@@ -438,7 +438,7 @@ public class EditDataDialog<T> extends Dialog {
 //                    dialogSelectAdapter.dataChange(checkOrgs);
                     dialogSelectAdapter.notifyItemChanged(dialogSelectAdapter.getSelectPosition());
                     Toast.makeText(context, "更改成功", Toast.LENGTH_SHORT).show();
-                } else if (type == DIALOG_TYPE_SAMPLESOURCE) {//商品来源
+                } else if (type == DIALOG_TYPE_SAMPLESOURCE) {//摊位号
                     sampleSources.get(dialogSelectAdapter.getSelectPosition()).ss_name = changeName;
                     new SampleSource().saveOrUpdate(sampleSources.get(dialogSelectAdapter.getSelectPosition()));
 //                    dialogSelectAdapter.dataChange(inspectors);
@@ -479,7 +479,7 @@ public class EditDataDialog<T> extends Dialog {
 
     private void onAdapterFilter(String str, int type) {
         if (str.equals("")) {
-            if (type == DIALOG_TYPE_BCHEKEORG) {//被检测单位
+            if (type == DIALOG_TYPE_BCHEKEORG) {//商户姓名
                 bCheckOrgs = new BCheckOrg().findAll();
                 dialogSelectAdapter.dataChange(bCheckOrgs);
                 Log.d("onAdapterFilter", "size=" + bCheckOrgs.size());
@@ -487,7 +487,7 @@ public class EditDataDialog<T> extends Dialog {
                 checkOrgs = new CheckOrg().findAll();
                 dialogSelectAdapter.dataChange(checkOrgs);
                 Log.d("onAdapterFilter", "size=" + checkOrgs.size());
-            } else if (type == DIALOG_TYPE_SAMPLESOURCE) {//商品来源
+            } else if (type == DIALOG_TYPE_SAMPLESOURCE) {//摊位号
                 sampleSources = new SampleSource().findAll();
                 dialogSelectAdapter.dataChange(sampleSources);
             } else if (type == DIALOG_TYPE_INSPECTOR) {//检测人员
@@ -495,11 +495,11 @@ public class EditDataDialog<T> extends Dialog {
                 dialogSelectAdapter.dataChange(inspectors);
             }
         } else {
-            if (type == DIALOG_TYPE_BCHEKEORG) {//被检测单位
+            if (type == DIALOG_TYPE_BCHEKEORG) {//商户姓名
                 dialogSelectAdapter.dataChange(filter(str, (List<T>) bCheckOrgs));
             } else if (type == DIALOG_TYPE_CHECKORG) {//检测单位
                 dialogSelectAdapter.dataChange(filter(str, (List<T>) checkOrgs));
-            } else if (type == DIALOG_TYPE_SAMPLESOURCE) {//商品来源
+            } else if (type == DIALOG_TYPE_SAMPLESOURCE) {//摊位号
                 dialogSelectAdapter.dataChange(filter(str, (List<T>) sampleSources));
             } else if (type == DIALOG_TYPE_INSPECTOR) {//检测人员
                 dialogSelectAdapter.dataChange(filter(str, (List<T>) inspectors));

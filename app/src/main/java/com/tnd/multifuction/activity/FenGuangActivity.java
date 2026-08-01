@@ -262,15 +262,15 @@ public class FenGuangActivity<T> extends TestActivity implements View.OnClickLis
     }
 
     public static int DIALOG_CHECKED_ORG = 1;//检测单位
-    public static int DIALOG_SAMPLE_SOURCE = 2;//商品来源
+    public static int DIALOG_SAMPLE_SOURCE = 2;//摊位号
     public static int DIALOG_SAMPLE_NAME = 3;//样品名称
     private Dialog dialog;
     private ListView lv;
-    private List<BCheckOrg> checkOrgs;//被检测单位
-    private List<SampleSource> sampleSources;//商品来源
+    private List<BCheckOrg> checkOrgs;//商户姓名
+    private List<SampleSource> sampleSources;//摊位号
     private List<SampleName> sampleNames;//样品名称
-    private List<BCheckOrg> checkOrgs_s = new ArrayList<>();//被检测单位
-    private List<SampleSource> sampleSources_s = new ArrayList<>();//商品来源
+    private List<BCheckOrg> checkOrgs_s = new ArrayList<>();//商户姓名
+    private List<SampleSource> sampleSources_s = new ArrayList<>();//摊位号
     private List<SampleName> sampleNames_s = new ArrayList<>();//样品名称
     public FiltrateAdapter filtrateAdapter;
     public String checkOrg = "", sampleSource = "", sampleName = "";
@@ -444,8 +444,10 @@ public class FenGuangActivity<T> extends TestActivity implements View.OnClickLis
 
     private void test() {
 
-        if (!validateBusyOrNot() || !validateCommonDataIsComplete() || !validateSampleComplete())
+        if (!validateBusyOrNot() || !validateCommonDataIsComplete() || !validateSampleComplete()) {
+            APPUtils.showToast(this,"请先填写检测信息");
             return;
+        }
         isTesting = true;
         clearShow();
         startCountDown();
@@ -475,11 +477,11 @@ public class FenGuangActivity<T> extends TestActivity implements View.OnClickLis
             return false;
         }
         if (TextUtils.isEmpty(etCheckedOrg.getText().toString().trim())) {
-            APPUtils.showToast(this, "请选择被检单位");
+            APPUtils.showToast(this, "请选择商户姓名");
             return false;
         }
         if (TextUtils.isEmpty(etSampleSource.getText().toString().trim())) {
-            APPUtils.showToast(this, "请选择商品来源");
+            APPUtils.showToast(this, "请选择摊位号");
             return false;
         }
         if (TextUtils.isEmpty(et_sample_weight.getText().toString().trim())) {
@@ -726,11 +728,11 @@ public class FenGuangActivity<T> extends TestActivity implements View.OnClickLis
 
     protected boolean validateCommonDataIsComplete() {
         if (TextUtils.isEmpty(etCheckedOrg.getText().toString())) {
-            APPUtils.showToast(act, "请输入被检单位");
+            APPUtils.showToast(act, "请输入商户姓名");
             return false;
         }
         if (TextUtils.isEmpty(etSampleSource.getText().toString())) {
-            APPUtils.showToast(act, "请输入商品来源");
+            APPUtils.showToast(act, "请输入摊位号");
             return false;
         }
 //        if (Global.project == null) {

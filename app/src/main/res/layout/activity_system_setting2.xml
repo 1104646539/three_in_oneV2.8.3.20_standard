@@ -46,14 +46,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:onClick="onBCheckOrg"
-                android:text="被检测单位" />
+                android:text="商户姓名" />
 
             <Button
                 style="@style/btnSystemSetting"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:onClick="onSampleSource"
-                android:text="商品来源(摊位)" />
+                android:text="摊位号" />
 
             <Button
                 style="@style/btnSystemSetting"
@@ -112,7 +112,15 @@
                 style="@style/btnSystemSetting"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
+                android:visibility="gone"
                 android:onClick="onUpLoadingSetting"
+                android:text="上传设置(泉州食安)" />
+            <Button
+                style="@style/btnSystemSetting"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:visibility="visible"
+                android:onClick="onUpLoadingSetting2"
                 android:text="上传设置" />
         </LinearLayout>
 

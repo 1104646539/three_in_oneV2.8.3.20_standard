@@ -9,21 +9,21 @@ android {
             storePassword '123456'
         }
     }
-    /*splits {
+    splits {
         abi {
             enable true
             reset()
             include 'x86', 'armeabi-v7a','x86_64'
             universalApk true
         }
-    }*/
+    }
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.tnd.multifuction"
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
-        versionName "2.8"
+        versionName "2.13"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         packagingOptions {
             //解决编译时com.android.builder.merge.DuplicateRelativeFileException: More than one file was found with OS independent path 'META-INF/rxjava.properties'这个错误
@@ -64,14 +64,14 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    splits {
-        abi {
-            enable true
-            reset()
-            include 'x86', 'armeabi-v7a','x86_64'
-            universalApk true
-        }
-    }
+//    splits {
+//        abi {
+//            enable true
+//            reset()
+//            include 'x86', 'armeabi-v7a'
+//            universalApk true
+//        }
+//    }
 }
 
 dependencies {

@@ -98,7 +98,7 @@ public class ProjectManagerActivity extends BaseActivity implements OnClickListe
 			intent = new Intent(this, SampleActivity.class);
 			startActivity(intent);
 			break;
-		case R.id.activity_project_manager_btn_sampleunit:  //商品来源
+		case R.id.activity_project_manager_btn_sampleunit:  //摊位号
 
 			intent = new Intent(this,CheckProjectCompanyActivity.class);
 			intent.putExtra("source", "3");

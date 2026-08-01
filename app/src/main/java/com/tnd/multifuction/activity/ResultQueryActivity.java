@@ -40,6 +40,7 @@ import com.tnd.multifuction.model.CheckResult;
 import com.tnd.multifuction.model.Inspector;
 import com.tnd.multifuction.model.SampleSource;
 import com.tnd.multifuction.thread.UploadThread;
+import com.tnd.multifuction.thread.UploadThread2;
 import com.tnd.multifuction.util.APPUtils;
 import com.tnd.multifuction.util.Global;
 import com.tnd.multifuction.util.SerialUtils;
@@ -80,11 +81,11 @@ public class ResultQueryActivity extends Activity implements View.OnClickListene
     private Button btnExportData;
 
     private final static String EXPORT_DIR = "/有机磷和氨基甲酸酯类农药检测/";
-    private final static String[] EXCEL_HEADER = {"检测时间","样品编号", "商品名称", "检测项目", "检测值", "检测结果", "被检单位", "检测人员", "商品来源", "重量（kg）", "上传状态"};
+    private final static String[] EXCEL_HEADER = {"检测时间", "样品编号", "商品名称", "检测项目", "检测值", "检测结果", "商户姓名", "检测人员", "摊位号", "重量（kg）", "上传状态"};
 
     private static String[] HEADERS = new String[]{"检测编号", "检测项目", "检测人员", "通道",
-            "临界值", "抑制率/检测值", "检测结果", "被检单位",
-            "样品名称", "上传状态", "商品来源",
+            "临界值", "抑制率/检测值", "检测结果", "商户姓名",
+            "样品名称", "上传状态", "摊位号",
             "限量标准", "检测时间"};
     private List<CheckResult> resultList;
     private ListView lv;
@@ -94,6 +95,7 @@ public class ResultQueryActivity extends Activity implements View.OnClickListene
     private Button btnDelete;
     private Button btnPrint;
     private Button btnUpload;
+    private Button btnUpload2;
     private Activity act;
     private Button btnQuery;
     private CheckBox cbChecker;
@@ -289,6 +291,7 @@ public class ResultQueryActivity extends Activity implements View.OnClickListene
         btnDelete = findViewById(R.id.btn_delete_data);
         btnPrint = findViewById(R.id.btn_print);
         btnUpload = findViewById(R.id.btn_upload);
+        btnUpload2 = findViewById(R.id.btn_upload2);
         btnQuery = findViewById(R.id.btn_query);
         tvSampleNumber = findViewById(R.id.tv_sample_number);
 
@@ -299,6 +302,7 @@ public class ResultQueryActivity extends Activity implements View.OnClickListene
         btnDelete.setOnClickListener(this);
         btnPrint.setOnClickListener(this);
         btnUpload.setOnClickListener(this);
+        btnUpload2.setOnClickListener(this);
         btnQuery.setOnClickListener(this);
         tvSampleNumber.setOnClickListener(this);
     }
@@ -330,6 +334,9 @@ public class ResultQueryActivity extends Activity implements View.OnClickListene
                 break;
             case R.id.btn_upload:
                 upload();
+                break;
+            case R.id.btn_upload2:
+                upload2();
                 break;
             case R.id.btn_return:
                 finish();
@@ -375,7 +382,7 @@ public class ResultQueryActivity extends Activity implements View.OnClickListene
                 startActivity(new Intent(this, StatisticsActivity.class));
                 break;
             case R.id.tv_sample_number:
-                Log.d("","点击了我");
+                Log.d("", "点击了我");
                 tvSampleNumber.setSelected(!tvSampleNumber.isSelected());
                 adapter.setAllSelect(tvSampleNumber.isSelected());
                 lv.setAdapter(adapter);
@@ -471,6 +478,49 @@ public class ResultQueryActivity extends Activity implements View.OnClickListene
         return selector.orderBy("id", true);
     }
 
+    private void upload2() {
+        if (!ToolUtils.isNetworkConnected(this)) {
+            APPUtils.showToast(this, "请先连接网络");
+            return;
+        }
+        if (selectedResult == null) {
+            APPUtils.showToast(this, "请先选中数据");
+            return;
+        }
+        if (isUploading) {
+            APPUtils.showToast(this, "正在上传数据，请稍后...");
+            return;
+        }
+        isUploading = true;
+        List<CheckResult> list = new ArrayList<>();
+        List<CheckResult> list1 = new ArrayList<>();
+        list1 = adapter.getSelectList();
+        for (int i = 0; i < list1.size(); i++) {
+            Collections.addAll(list, list1.get(i));
+            Log.d("", "选中的List:" + list1.get(i));
+        }
+        UploadThread2 t = new UploadThread2(this, list1, new UploadThread2.onUploadListener() {
+            @Override
+            public void onSuccess(List<CheckResult> list, int returnId, int position, String result) {
+                if (!act.isFinishing()) {
+                    APPUtils.showToast(act, "上传成功");
+                    mHandler.obtainMessage(ToolUtils.upload_success, position, returnId, list).sendToTarget();
+
+                }
+                isUploading = false;
+            }
+
+            @Override
+            public void onFail(String failInfo) {
+                if (!act.isFinishing()) {
+                    mHandler.obtainMessage(ToolUtils.upload_fail, failInfo).sendToTarget();
+                }
+                isUploading = false;
+            }
+        });
+        t.start();
+    }
+
     private void upload() {
 //
         if (!ToolUtils.isNetworkConnected(this)) {
@@ -488,10 +538,10 @@ public class ResultQueryActivity extends Activity implements View.OnClickListene
         isUploading = true;
         List<CheckResult> list = new ArrayList<>();
         List<CheckResult> list1 = new ArrayList<>();
-        list1=adapter.getSelectList();
-        for(int i=0;i<list1.size();i++){
+        list1 = adapter.getSelectList();
+        for (int i = 0; i < list1.size(); i++) {
             Collections.addAll(list, list1.get(i));
-            Log.d("","选中的List:"+list1.get(i));
+            Log.d("", "选中的List:" + list1.get(i));
         }
         UploadThread t = new UploadThread(act, list, new UploadThread.onUploadListener() {
             @Override
@@ -688,10 +738,10 @@ public class ResultQueryActivity extends Activity implements View.OnClickListene
                     sheet.addCell(new Label(3, lineIdx, result.projectName, defaultCellFormat)); //检测项目
                     sheet.addCell(new Label(4, lineIdx, result.testValue, defaultCellFormat)); //检测值
                     sheet.addCell(new Label(5, lineIdx, result.resultJudge, defaultCellFormat)); //检测结果
-                    sheet.addCell(new Label(6, lineIdx, result.bcheckedOrganization, defaultCellFormat)); //被检单位
+                    sheet.addCell(new Label(6, lineIdx, result.bcheckedOrganization, defaultCellFormat)); //商户姓名
 
                     sheet.addCell(new Label(7, lineIdx, result.checker, defaultCellFormat)); //检测人员
-                    sheet.addCell(new Label(8, lineIdx, result.sampleSource, defaultCellFormat)); //商品来源
+                    sheet.addCell(new Label(8, lineIdx, result.sampleSource, defaultCellFormat)); //摊位号
                     sheet.addCell(new Label(9, lineIdx, result.weight, defaultCellFormat)); //重量
                     Log.d("uploadId", result.uploadId + "");
                     sheet.addCell(new Label(10, lineIdx, result.uploadId == 0 ? "未上传" : "已上传", defaultCellFormat)); //上传状态

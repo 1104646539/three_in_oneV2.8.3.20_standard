@@ -17,7 +17,9 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.db.sqlite.Selector;
 import com.lidroid.xutils.exception.DbException;
@@ -35,10 +37,12 @@ import com.tnd.multifuction.model.Print;
 import com.tnd.multifuction.model.Project;
 import com.tnd.multifuction.model.SampleName;
 import com.tnd.multifuction.model.SampleSource;
+import com.tnd.multifuction.model.YNMLoginModel;
 import com.tnd.multifuction.resource.SPResource;
 import com.tnd.multifuction.util.APPUtils;
 import com.tnd.multifuction.util.Global;
 import com.tnd.multifuction.util.JsonUtil;
+import com.tnd.multifuction.util.LoggingInterceptor;
 import com.tnd.multifuction.util.SPUtils;
 import com.tnd.multifuction.util.SerialUtils;
 import com.tnd.multifuction.util.ToolUtils;
@@ -65,10 +69,12 @@ import jxl.Workbook;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okio.BufferedSink;
 
 public class MainActivity extends Activity implements View.OnClickListener {
 
@@ -96,7 +102,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
 //                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        SerialUtils.InitSerialPort(this);
+        try {
+            SerialUtils.InitSerialPort(this);
+        } catch (UnsatisfiedLinkError e) {
+            Log.i(TAG, "onCreate: 串口打开失败");
+        }
 
 
         btnPesticideTest = findViewById(R.id.btn_pesticide_test);
@@ -111,13 +121,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
         btnSysSetting.setOnClickListener(this);
 
 
-
         initSP();
         initTestData();
         startHold2Server();
         initData();
         initProject();
-
+//        loginYNM();
 
 //        if (Global.DEBUG) {
 //            Global.cardWarmTime = 30;
@@ -131,13 +140,72 @@ public class MainActivity extends Activity implements View.OnClickListener {
         }
 
 
-        String str =getJson("test2.json", this);
+        String str = getJson("test2.json", this);
 
         try {
-            Log.d(TAG,"json="+ new String(str.getBytes(),"UTF-8"));
+            Log.d(TAG, "json=" + new String(str.getBytes(), "UTF-8"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+
+    }
+
+    /**
+     * 登录云农贸
+     */
+    private void loginYNM() {
+
+        if (TextUtils.isEmpty(Global.YNM_BaseUrl)) {
+            APPUtils.showToast(this, "设备ID或上传地址为空，请输入后重新上传");
+            return;
+        }
+        Log.d(TAG, "YNM_BaseUrl:" + Global.YNM_BaseUrl);
+        OkHttpClient okHttpClient = new OkHttpClient.Builder().addInterceptor(new LoggingInterceptor()).build();
+
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("grant_type", "client_credentials")
+                .addFormDataPart("client_id", Global.YNM_APP_ID)
+                .addFormDataPart("client_secret", Global.YNM_APP_PW)
+                .addFormDataPart("scope", "all")
+                .build();
+
+        Request request = new Request.Builder().url(Global.YNM_BaseUrl + Global.YNM_Login)
+                .post(requestBody).build();
+        Call call = okHttpClient.newCall(request);
+        call.enqueue(new Callback() {
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d("失败", e.toString());
+                APPUtils.showToast(MainActivity.this, e.toString());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String result = response.body().string();
+                Log.d("onResponse", "onResponse=" + result);
+                if (result == null || result.isEmpty()) {
+                    APPUtils.showToast(MainActivity.this, "登录失败");
+                } else {
+                    try {
+                        YNMLoginModel ynmLoginModel = new Gson().fromJson(result, YNMLoginModel.class);
+                        if ((ynmLoginModel.getError() == null || ynmLoginModel.getError().isEmpty())
+                                && (ynmLoginModel.getErrCode() == null || ynmLoginModel.getErrCode().isEmpty())) {
+                            //登录成功
+                            APPUtils.showToast(MainActivity.this, "登录成功");
+                            Global.YNM_Token = ynmLoginModel.getAccess_token();
+                            Log.d("登录成功", "Global.YNM_Token=" + Global.YNM_Token);
+                        } else {
+                            APPUtils.showToast(MainActivity.this, "登录失败:" + ynmLoginModel.getError_description() + ynmLoginModel.getErrMsg());
+                        }
+                    } catch (Exception e) {
+                        APPUtils.showToast(MainActivity.this, "登录失败:" + e.toString());
+
+                    }
+                }
+            }
+        });
 
     }
 
@@ -178,10 +246,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
         } catch (DbException e) {
             e.printStackTrace();
         }
-        //被检测单位
+        //商户姓名
         List<BCheckOrg> bCheckOrgs = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            BCheckOrg co = new BCheckOrg("被检测单位" + (i + 1));
+            BCheckOrg co = new BCheckOrg("何利祥");
             bCheckOrgs.add(co);
         }
         try {
@@ -189,18 +257,18 @@ public class MainActivity extends Activity implements View.OnClickListener {
         } catch (DbException e) {
             e.printStackTrace();
         }
-        //商品来源
-            List<SampleSource> sampleSources = new ArrayList<>();
-            for (int i = 0; i < 5; i++) {
-                SampleSource ss = new SampleSource("产地" + (i + 1));
-                sampleSources.add(ss);
-            }
+        //摊位号
+        List<SampleSource> sampleSources = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            SampleSource ss = new SampleSource("11-27");
+            sampleSources.add(ss);
+        }
 
-            try {
-                DbHelper.GetInstance().saveAll(sampleSources);
-            } catch (DbException e) {
-                e.printStackTrace();
-            }
+        try {
+            DbHelper.GetInstance().saveAll(sampleSources);
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
 //        //样品名称
 //        List<SampleName> sampleNames = new ArrayList<>();
 //        for (int i = 0; i < 5; i++) {
@@ -234,28 +302,28 @@ public class MainActivity extends Activity implements View.OnClickListener {
 //            project.save(project);
             dbUtils = DbHelper.GetInstance();
             try {
-                dbUtils.save(new Project("", "过氧化物酶", "GB/T 5009.199", 20.0f,0.097f,-0.0087f, 410,"ug/ml"));
-                dbUtils.save(new Project("", "重金属镉", "GB/T 5009.199", 0.25f,4.39f,-0.16f, 535,"mg/kg"));
-                dbUtils.save(new Project("", "过氧化苯甲酰", "GB/T 5009.199", 0.09f,0.79f,0.05f, 535,"mg/kg"));
-                dbUtils.save(new Project("", "谷氨酸钠", "GB/T 5009.199", 1f,108f,-6f, 410,"mg/kg"));
-                dbUtils.save(new Project("", "硫酸镁", "GB/T 5009.199", 0.09f,0.79f,0.05f, 535,"mg/kg"));
-                dbUtils.save(new Project("", "甜蜜素", "GB/T 5009.199", 0.6f, 7.66f,0.18f, 535,"mg/kg"));
-                dbUtils.save(new Project("", "重金属铬", "GB/T 5009.199", 0.1f, 1.15f,0.07f, 535,"mg/kg"));
-                dbUtils.save(new Project("", "硝酸盐", "GB/T 5009.199", 0.7f, 10.7005f,-0.327f, 535,"mg/kg"));
-                dbUtils.save(new Project("", "挥发性盐基氮", "GB/T 5009.199", 20.0f,25.18f, -1.1f, 590,"mg/kg"));
-                dbUtils.save(new Project("", "糖精钠", "GB/T 5009.199", 1f, 0.46f, -0.01f, 590,"mg/kg"));
-                dbUtils.save(new Project("", "溴酸钾", "GB/T 5009.199", 0.5f, 139.7f, -6.02f, 535,"mg/kg"));
-                dbUtils.save(new Project("", "山梨酸钾", "GB/T 5009.199", 20.0f,2.97f,-0.02f, 535,"mg/kg"));
-                dbUtils.save(new Project("", "重金属铅", "GB/T 5009.199", 0.2f, 13.94f, -1.15f, 535,"mg/kg"));
-                dbUtils.save(new Project("", "硫酸铝钾", "GB/T 5009.199", 2.0f, 251.18f,-13.11f, 535,"mg/kg"));
-                dbUtils.save(new Project("", "甲醇", "GB/T 5009.199", 0.2f,3.2993f , -0.0235f, 410,"mg/kg"));
-                dbUtils.save(new Project("", "硼砂", "GB/T 5009.199", 5.0f, 106.07f, -2.30f, 410,"mg/kg"));
-                dbUtils.save(new Project("", "双氧水", "GB/T 5009.199", 10.0f, 360.84f, -11.02f, 410,"mg/kg"));
-                dbUtils.save(new Project("", "二氧化硫", "GB/T 5009.199", 10.0f, 254.79f, -3.4248f, 410,"mg/kg"));
-                dbUtils.save(new Project("", "亚硝酸盐", "GB/T 5009.199", 1.0f,35.108f,-1.6583f, 535,"mg/kg"));
-                dbUtils.save(new Project("", "吊白块", "GB/T 5009.199", 10.0f, 16.467f, -3.1276f, 410,"mg/kg"));
-                dbUtils.save(new Project("", "甲醛", "GB/T 5009.199", 1.0f,16.467f,-3.1276f, 410,"mg/kg"));
-                dbUtils.save(new Project("", "有机磷和氨基甲酸酯类农药", "GB/T 5009.199", 0f, 1f, 0f, 410,"%"));
+                dbUtils.save(new Project("", "过氧化物酶", "GB/T 5009.199", 20.0f, 0.097f, -0.0087f, 410, "ug/ml"));
+                dbUtils.save(new Project("", "重金属镉", "GB/T 5009.199", 0.25f, 4.39f, -0.16f, 535, "mg/kg"));
+                dbUtils.save(new Project("", "过氧化苯甲酰", "GB/T 5009.199", 0.09f, 0.79f, 0.05f, 535, "mg/kg"));
+                dbUtils.save(new Project("", "谷氨酸钠", "GB/T 5009.199", 1f, 108f, -6f, 410, "mg/kg"));
+                dbUtils.save(new Project("", "硫酸镁", "GB/T 5009.199", 0.09f, 0.79f, 0.05f, 535, "mg/kg"));
+                dbUtils.save(new Project("", "甜蜜素", "GB/T 5009.199", 0.6f, 7.66f, 0.18f, 535, "mg/kg"));
+                dbUtils.save(new Project("", "重金属铬", "GB/T 5009.199", 0.1f, 1.15f, 0.07f, 535, "mg/kg"));
+                dbUtils.save(new Project("", "硝酸盐", "GB/T 5009.199", 0.7f, 10.7005f, -0.327f, 535, "mg/kg"));
+                dbUtils.save(new Project("", "挥发性盐基氮", "GB/T 5009.199", 20.0f, 25.18f, -1.1f, 590, "mg/kg"));
+                dbUtils.save(new Project("", "糖精钠", "GB/T 5009.199", 1f, 0.46f, -0.01f, 590, "mg/kg"));
+                dbUtils.save(new Project("", "溴酸钾", "GB/T 5009.199", 0.5f, 139.7f, -6.02f, 535, "mg/kg"));
+                dbUtils.save(new Project("", "山梨酸钾", "GB/T 5009.199", 20.0f, 2.97f, -0.02f, 535, "mg/kg"));
+                dbUtils.save(new Project("", "重金属铅", "GB/T 5009.199", 0.2f, 13.94f, -1.15f, 535, "mg/kg"));
+                dbUtils.save(new Project("", "硫酸铝钾", "GB/T 5009.199", 2.0f, 251.18f, -13.11f, 535, "mg/kg"));
+                dbUtils.save(new Project("", "甲醇", "GB/T 5009.199", 0.2f, 3.2993f, -0.0235f, 410, "mg/kg"));
+                dbUtils.save(new Project("", "硼砂", "GB/T 5009.199", 5.0f, 106.07f, -2.30f, 410, "mg/kg"));
+                dbUtils.save(new Project("", "双氧水", "GB/T 5009.199", 10.0f, 360.84f, -11.02f, 410, "mg/kg"));
+                dbUtils.save(new Project("", "二氧化硫", "GB/T 5009.199", 10.0f, 254.79f, -3.4248f, 410, "mg/kg"));
+                dbUtils.save(new Project("", "亚硝酸盐", "GB/T 5009.199", 1.0f, 35.108f, -1.6583f, 535, "mg/kg"));
+                dbUtils.save(new Project("", "吊白块", "GB/T 5009.199", 10.0f, 16.467f, -3.1276f, 410, "mg/kg"));
+                dbUtils.save(new Project("", "甲醛", "GB/T 5009.199", 1.0f, 16.467f, -3.1276f, 410, "mg/kg"));
+                dbUtils.save(new Project("", "有机磷和氨基甲酸酯类农药", "GB/T 5009.199", 0f, 1f, 0f, 410, "%"));
             } catch (DbException e) {
                 e.printStackTrace();
             }
@@ -327,8 +395,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
         Global.uploadUrl = sp.getString(SPResource.KEY_UPLOAD_URL, "https://qzsp.leadall.net/data/reception/detectData");
         Global.TESTING_UNIT_NAME = sp.getString(SPResource.KEY_UPLOAD_USERNAME, "cs002");
         Global.TESTING_UNIT_NUMBER = sp.getString(SPResource.KEY_UPLOAD_PASSWORD, "testwe2023");
-        Global.ASSET_NAME = sp.getString(SPResource.ASSET_NAME,"1号");
+        Global.ASSET_NAME = sp.getString(SPResource.ASSET_NAME, "1号");
         Global.ASSET_CODE = sp.getString(SPResource.ASSET_CODE, "001");
+        Global.YNM_BaseUrl = sp.getString(SPResource.KEY_YNM_BASE_URL, Global.YNM_BaseUrl);
+        Global.YNM_APP_ID = sp.getString(SPResource.KEY_YNM_APP_ID, Global.YNM_APP_ID);
+        Global.YNM_APP_PW = sp.getString(SPResource.KEY_YNM_APP_PW, Global.YNM_APP_PW);
+
 //        Global.device_id = sp.getString(SPResource.KEY_COMPARE_VALUE, "");
 //        Global.uploadModel = sp.getInt(SPResource.KEY_UPLOAD_MODE, 1);
 //        Global.limitValue = sp.getInt(SPResource.KEY_CARD_TEST_LIMIT_VALUE, 400);
@@ -356,10 +428,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
             prints_check.add(new Print("通道号", true, true, true));
             prints_check.add(new Print("单位", true, true, true));
             prints_check.add(new Print("样品编号", true, false, false));
-            prints_check.add(new Print("被检测单位", true, false,
+            prints_check.add(new Print("商户姓名", true, false,
                     false));
             prints_check.add(new Print("重量", true, false, false));
-            prints_check.add(new Print("商品来源", true, false, false));
+            prints_check.add(new Print("摊位号", true, false, false));
             prints_check.add(new Print("限量标准", true, false, false));
             prints_check.add(new Print("检测单位", true, false, false));
             prints_check.add(new Print("检测人员", true, false, false));
@@ -370,10 +442,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
             prints_data_manager.add(new Print("吸光度", true, true, true));
             prints_data_manager.add(new Print("判定结果", true, true, true));
             prints_data_manager.add(new Print("通道号", true, true, true));
-            prints_data_manager.add(new Print("被检测单位", true, false, false));
+            prints_data_manager.add(new Print("商户姓名", true, false, false));
             prints_data_manager.add(new Print("检测单位", true, true, false));
             prints_data_manager.add(new Print("检测人员", true, true, false));
-            prints_data_manager.add(new Print("商品来源", true, false, false));
+            prints_data_manager.add(new Print("摊位号", true, false, false));
             prints_data_manager.add(new Print("样品编号", true, false, false));
             prints_data_manager.add(new Print("重量", true, false, false));
             prints_data_manager.add(new Print("限量标准", true, true, false));
@@ -459,6 +531,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     }
 
     ProgressDialog progressDialog;
+
     private void initXlzMap() {
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("正在初始化，请等待……");

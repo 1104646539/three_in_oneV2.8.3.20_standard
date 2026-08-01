@@ -226,12 +226,12 @@ public class ToolUtils {
                 if (print.isSelectMultiple || print.isRequired) {
                     if (print.p_name.equals("样品编号")) {
                         isPrint_sampleNum = true;//样品编号
-                    } else if (print.p_name.equals("被检测单位")) {
-                        isPrint_bcheckedOrganization = true;//被检测单位
+                    } else if (print.p_name.equals("商户姓名")) {
+                        isPrint_bcheckedOrganization = true;//商户姓名
                     } else if (print.p_name.equals("重量")) {
                         isPrint_weight = true;//重量
-                    } else if (print.p_name.equals("商品来源")) {
-                        isPrint_sampleSource = true;//商品来源
+                    } else if (print.p_name.equals("摊位号")) {
+                        isPrint_sampleSource = true;//摊位号
                     } else if (print.p_name.equals("限量标准")) {
                         isPrint_standardValue = true;//限量值
                     } else if (print.p_name.equals("限量标准")) {
@@ -278,11 +278,11 @@ public class ToolUtils {
                 sb.append(result.resultJudge + "\n");
 
                 if (isPrint_bcheckedOrganization) {
-                    sb.append("被检单位:");
+                    sb.append("商户姓名:");
                     sb.append(result.bcheckedOrganization + "\n");
                 }
                 if (isPrint_sampleSource) {
-                    sb.append("商品来源:");
+                    sb.append("摊位号:");
                     sb.append(result.sampleSource + "\n");
                 }
                 if (isPrint_checkedOrganization) {
@@ -382,12 +382,12 @@ public class ToolUtils {
                 if (print.isSelectMultiple || print.isRequired) {
                     if (print.p_name.equals("样品编号")) {
                         isPrint_sampleNum = true;//样品编号
-                    } else if (print.p_name.equals("被检测单位")) {
-                        isPrint_bcheckedOrganization = true;//被检测单位
+                    } else if (print.p_name.equals("商户姓名")) {
+                        isPrint_bcheckedOrganization = true;//商户姓名
                     } else if (print.p_name.equals("重量")) {
                         isPrint_weight = true;//重量
-                    } else if (print.p_name.equals("商品来源")) {
-                        isPrint_sampleSource = true;//商品来源
+                    } else if (print.p_name.equals("摊位号")) {
+                        isPrint_sampleSource = true;//摊位号
                     } else if (print.p_name.equals("限量标准")) {
                         isPrint_standardValue = true;//限量值
                     } else if (print.p_name.equals("限量标准")) {
@@ -474,7 +474,7 @@ public class ToolUtils {
                     }
 
                     if (isPrint_bcheckedOrganization) {
-                        SerialUtils.COM4_SendData(("被检单位:").getBytes(Charset.forName("GB2312")));
+                        SerialUtils.COM4_SendData(("商户姓名:").getBytes(Charset.forName("GB2312")));
                         SerialUtils.COM4_SendData((result.bcheckedOrganization + "\n").getBytes(Charset.forName("GB2312")));
                     }
 
@@ -485,10 +485,10 @@ public class ToolUtils {
                             String substring2 = sampleSource.substring(0, 10);
 
                             SerialUtils.COM4_SendData((substring1 + "\n").getBytes(Charset.forName("GB2312")));
-                            SerialUtils.COM4_SendData(("商品来源:" + substring2 + "\n").getBytes(Charset.forName("GB2312")));
+                            SerialUtils.COM4_SendData(("摊位号:" + substring2 + "\n").getBytes(Charset.forName("GB2312")));
 
                         } else {
-                            SerialUtils.COM4_SendData(("商品来源:" + result.sampleSource + "\n").getBytes(Charset.forName("GB2312")));
+                            SerialUtils.COM4_SendData(("摊位号:" + result.sampleSource + "\n").getBytes(Charset.forName("GB2312")));
                         }
                     }
 
@@ -513,13 +513,13 @@ public class ToolUtils {
 
 
                         // 增加打印二维码
-                        SerialUtils.COM4_SendData(BrightCommandM.t0A());
-                        SerialUtils.COM4_SendData(BrightCommandM.t0A());
-                        SerialUtils.COM4_SendData(BrightCommandM.t1b61(1));
-                        SerialUtils.COM4_SendData(BrightCommandM.t1d77(2));
-                        SerialUtils.COM4_SendData(BrightCommandM.t1d28Qr(getData(result, context)));
-                        SerialUtils.COM4_SendData(BrightCommandM.t1d77(2));
-                        SerialUtils.COM4_SendData(BrightCommandM.t1b61(1));
+//                        SerialUtils.COM4_SendData(BrightCommandM.t0A());
+//                        SerialUtils.COM4_SendData(BrightCommandM.t0A());
+//                        SerialUtils.COM4_SendData(BrightCommandM.t1b61(1));
+//                        SerialUtils.COM4_SendData(BrightCommandM.t1d77(2));
+//                        SerialUtils.COM4_SendData(BrightCommandM.t1d28Qr(getData(result, context)));
+//                        SerialUtils.COM4_SendData(BrightCommandM.t1d77(2));
+//                        SerialUtils.COM4_SendData(BrightCommandM.t1b61(1));
                     /*SerialUtils.COM4_SendData(BrightCommandM.t0A());
                     SerialUtils.COM4_SendData(BrightCommandM.t0A());
                     SerialUtils.COM4_SendData(BrightCommandM.t0A());*/
@@ -603,7 +603,7 @@ public class ToolUtils {
                     }
 
                     if (isPrint_bcheckedOrganization) {
-                        SerialUtils.COM4_SendData(("被检单位:").getBytes(Charset.forName("GB2312")));
+                        SerialUtils.COM4_SendData(("商户姓名:").getBytes(Charset.forName("GB2312")));
                         SerialUtils.COM4_SendData((result.bcheckedOrganization + "\n").getBytes(Charset.forName("GB2312")));
                     }
 
@@ -614,10 +614,10 @@ public class ToolUtils {
                             String substring2 = sampleSource.substring(0, 10);
 
                             SerialUtils.COM4_SendData((substring1 + "\n").getBytes(Charset.forName("GB2312")));
-                            SerialUtils.COM4_SendData(("商品来源:" + substring2 + "\n").getBytes(Charset.forName("GB2312")));
+                            SerialUtils.COM4_SendData(("摊位号:" + substring2 + "\n").getBytes(Charset.forName("GB2312")));
 
                         } else {
-                            SerialUtils.COM4_SendData(("商品来源:" + result.sampleSource + "\n").getBytes(Charset.forName("GB2312")));
+                            SerialUtils.COM4_SendData(("摊位号:" + result.sampleSource + "\n").getBytes(Charset.forName("GB2312")));
                         }
                     }
 
@@ -775,8 +775,8 @@ public class ToolUtils {
         sb.append("\n重量：" + result.weight + " kg");
         sb.append("\n样品编码：" + result.sampleNum);
         sb.append("\n检测单位：" + result.checkedOrganization);
-        sb.append("\n被检单位：" + result.bcheckedOrganization);
-        sb.append("\n商品来源:" + result.sampleSource);
+        sb.append("\n商户姓名：" + result.bcheckedOrganization);
+        sb.append("\n摊位号:" + result.sampleSource);
         sb.append("\n检测人员：" + result.checker);
         if ("有机磷和氨基甲酸酯类农药".equals(result.projectName)) {
             sb.append("\n对照值：" + PreferencesUtils.getString(context, "Ac"));
@@ -825,12 +825,12 @@ public class ToolUtils {
                 if (print.isSelectMultiple || print.isRequired) {
                     if (print.p_name.equals("样品编号")) {
                         isPrint_sampleNum = true;//样品编号
-                    } else if (print.p_name.equals("被检测单位")) {
-                        isPrint_bcheckedOrganization = true;//被检测单位
+                    } else if (print.p_name.equals("商户姓名")) {
+                        isPrint_bcheckedOrganization = true;//商户姓名
                     } else if (print.p_name.equals("重量")) {
                         isPrint_weight = true;//重量
-                    } else if (print.p_name.equals("商品来源")) {
-                        isPrint_sampleSource = true;//商品来源
+                    } else if (print.p_name.equals("摊位号")) {
+                        isPrint_sampleSource = true;//摊位号
                     } else if (print.p_name.equals("限量标准")) {
                         isPrint_standardValue = true;//限量标准
                     } else if (print.p_name.equals("限量标准")) {
@@ -887,11 +887,11 @@ public class ToolUtils {
                 sb.append("判定结果:");
                 sb.append(result.resultJudge + "\n");
                 if (isPrint_bcheckedOrganization) {
-                    sb.append("被检单位:");
+                    sb.append("商户姓名:");
                     sb.append(result.bcheckedOrganization + "\n");
                 }
                 if (isPrint_sampleSource) {
-                    sb.append("商品来源:");
+                    sb.append("摊位号:");
                     sb.append(result.sampleSource + "\n");
                 }
                 if (isPrint_checkedOrganization) {
@@ -1020,13 +1020,13 @@ public class ToolUtils {
             sb.append(result.unit + "\n");
             sb.append("检测结果:");
             sb.append(result.resultJudge + "\n");
-            sb.append("被检单位:");
+            sb.append("商户姓名:");
             sb.append(result.checkedOrganization + "\n");
             sb.append("样品名称:");
             sb.append(result.sampleName + "\n");
             sb.append("样本编号:");
             sb.append(result.sampleNum + "\n");
-            sb.append("商品来源:");
+            sb.append("摊位号:");
             sb.append(result.sampleSource + "\n");
             sb.append("限量标准:");
             sb.append(result.testStandard + "\n");
@@ -1142,7 +1142,7 @@ public class ToolUtils {
 //            JSONObject subJson = new JSONObject();
 //            array.put(subJson);
 //            subJson.put("rwbh", "04");  //任务编号，可以为空
-//            subJson.put("bjdw", result.checkedOrganization);  //被检单位
+//            subJson.put("bjdw", result.checkedOrganization);  //商户姓名
 //            subJson.put("jcxm", result.projectName);  //检测项目  "农药残留"
 //            subJson.put("jcdt", ToolUtils.long2String(result.testTime, "yyyy-MM-dd HH:mm:ss"));  //检测时间
 //
@@ -1152,7 +1152,7 @@ public class ToolUtils {
 //
 //            subJson.put("ybbh", result.sample.sampleNo);  //样本编号
 //            subJson.put("ybmc", result.sample.sampleName);  //样品名称
-//            subJson.put("ybcd", result.sampleSource);  //商品来源
+//            subJson.put("ybcd", result.sampleSource);  //摊位号
 //
 //            subJson.put("xlbz", result.testStandard);  //限量标准
 //            subJson.put("sbbh", "XH0001");  //设备型号

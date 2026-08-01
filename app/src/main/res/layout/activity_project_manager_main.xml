@@ -2,9 +2,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/BACK_GROUND_COLOR" >
+    android:background="@color/BACK_GROUND_COLOR">
 
     <TextView
+        style="@style/baseData_title_style1"
         android:layout_width="match_parent"
         android:layout_height="44dp"
         android:layout_alignParentTop="true"
@@ -12,81 +13,82 @@
         android:gravity="center_vertical"
         android:paddingLeft="5dp"
         android:text="项目管理"
-        android:textColor="#ffffff"
-        style="@style/baseData_title_style1"  />
+        android:textColor="#ffffff" />
 
     <TableLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:layout_margin="50dp" >
+        android:layout_margin="50dp">
 
         <TableRow>
 
             <Button
                 android:id="@+id/activity_project_manager_btn_checkunit"
+                style="@style/project_manager_button_style"
                 android:layout_margin="50dp"
-                android:text="检测单位"
-                style="@style/project_manager_button_style" />
+                android:text="检测单位" />
 
             <Button
                 android:id="@+id/activity_project_manager_btn_checker"
+                style="@style/project_manager_button_style"
                 android:layout_margin="50dp"
                 android:layout_marginLeft="30dp"
-                android:text="检验员"
-                style="@style/project_manager_button_style" />
+                android:text="商户姓名" />
 
             <Button
                 android:id="@+id/activity_project_manager_btn_project"
+                style="@style/project_manager_button_style"
                 android:layout_margin="50dp"
-                android:text="检测项目"
-                style="@style/project_manager_button_style" />
+                android:text="检测项目" />
         </TableRow>
 
         <TableRow>
 
             <Button
                 android:id="@+id/activity_project_manager_btn_reagentcompany"
+                style="@style/project_manager_button_style"
                 android:layout_margin="50dp"
                 android:layout_marginLeft="30dp"
-                android:visibility="gone"
                 android:text="试剂厂商"
-                style="@style/project_manager_button_style" />
+                android:visibility="gone" />
 
             <Button
                 android:id="@+id/activity_project_manager_btn_checkpicture"
+                style="@style/project_manager_button_style"
                 android:layout_margin="50dp"
-                android:text="检测图片"
-                style="@style/project_manager_button_style" />
+                android:text="检测图片" />
 
             <Button
                 android:id="@+id/activity_project_manager_btn_cardcompany"
+                style="@style/project_manager_button_style"
                 android:layout_margin="50dp"
                 android:layout_marginLeft="30dp"
-                android:text="试剂厂商"
-                style="@style/project_manager_button_style" />
+                android:text="试剂厂商" />
+
             <Button
                 android:id="@+id/activity_project_manager_btn_sampletype"
+                style="@style/project_manager_button_style"
                 android:layout_margin="50dp"
                 android:text="样品类型"
-                style="@style/project_manager_button_style" />
-
-        </TableRow>
-
-        <TableRow>
-
-
-            <Button
-                android:id="@+id/activity_project_manager_btn_samplename"
-                android:layout_margin="50dp"
-                android:text="样品名称"
-                style="@style/project_manager_button_style" />
-
+                android:visibility="gone" />
             <Button
                 android:id="@+id/activity_project_manager_btn_sampleunit"
                 style="@style/project_manager_button_style"
                 android:layout_margin="50dp"
                 android:text="来源(摊位)" />
+        </TableRow>
+
+        <TableRow>
+
+            <Button
+                android:id="@+id/activity_project_manager_btn_samplename"
+                style="@style/project_manager_button_style"
+                android:layout_margin="50dp"
+                android:visibility="gone"
+                android:text="样品名称" />
+
+
         </TableRow>
     </TableLayout>
 

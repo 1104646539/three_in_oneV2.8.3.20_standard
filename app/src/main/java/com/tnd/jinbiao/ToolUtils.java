@@ -71,7 +71,9 @@ public class ToolUtils {
     }
 
     public static void hiddenHUD() {
-        kp_hud.dismiss();
+        if (kp_hud != null && kp_hud.isShowing()) {
+            kp_hud.dismiss();
+        }
     }
 
     public static Bitmap getPicUrlWithBitmap(Context context, String name) {
@@ -257,7 +259,7 @@ public class ToolUtils {
      * @return
      */
     public static String GetPrintInfo(ResultModel model, Context context, String testType) {
-        StringBuffer sb = new StringBuffer("\n"+"胶体金检测" + "\n");
+        StringBuffer sb = new StringBuffer("\n" + "胶体金检测" + "\n");
         sb.append("\n");
         if (model.id != 0) {
             sb.append("检测流水号：");
@@ -265,7 +267,7 @@ public class ToolUtils {
         }
         sb.append("检测单位：");
         sb.append(model.company_name + "\n");
-        sb.append("检 验 员：");
+        sb.append("商户姓名：");
         sb.append(model.persion + "\n");
 //		sb.append("试剂厂商：");
 //		sb.append(model. + "\n");
@@ -276,7 +278,7 @@ public class ToolUtils {
 
         sb.append("样品类型：");
         sb.append(model.sample_type + "\n");
-        sb.append("商品来源：");
+        sb.append("摊位号：");
         sb.append(model.sample_unit + "\n");
 
         sb.append("样品编号：");
@@ -296,7 +298,7 @@ public class ToolUtils {
         sb.append(model.check_result + "\n");
         sb.append("检测时间：");
         sb.append(ToolUtils.dateToString(ToolUtils.longToDate(
-                model.time, "yyyy-MM-dd HH:mm:ss"),
+                        model.time, "yyyy-MM-dd HH:mm:ss"),
                 "yyyy-MM-dd HH:mm:ss") + "\n");
         sb.append("\n");
 

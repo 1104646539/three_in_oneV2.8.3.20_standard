@@ -40,6 +40,18 @@ public class SPResource {
      * 上传密码
      */
     public static final String KEY_UPLOAD_PASSWORD = "key_upload_password";
+    /**
+     * 云农贸 url
+     */
+    public static final String KEY_YNM_BASE_URL = "key_ynm_base_url";
+    /**
+     * 云农贸 appid
+     */
+    public static final String KEY_YNM_APP_ID = "key_ynm_app_id";
+    /**
+     * 云农贸 密码
+     */
+    public static final String KEY_YNM_APP_PW = "key_ynm_app_pw";
 
     /**
      * 上传方式，1代表自动上传，2代表手动上传

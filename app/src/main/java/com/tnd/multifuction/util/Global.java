@@ -15,6 +15,8 @@ import java.util.List;
 
 public class Global {
 
+    public static boolean isCodeDebug = false;
+
     public static Project project;
 
     public static final String DEBUG_DEVICE_ID = "CESHIZHUANYONGID";
@@ -30,7 +32,7 @@ public class Global {
     /**
      * 卡片反应时间
      */
-    public static int cardReactionTime ;
+    public static int cardReactionTime;
     /**
      * 卡片加热时间
      */
@@ -61,15 +63,15 @@ public class Global {
     public static final int DATABASE_VERSION = 1;
 
     /**
-     *T2主板通信串口名称
+     * T2主板通信串口名称
      */
     public static final String COM3_T2 = "/dev/ttyAMA3";
     /**
-     *T3主板通信串口名称
+     * T3主板通信串口名称
      */
     public static final String COM3_T3 = "/dev/ttySAC3";
     /**
-     *T2主板打印串口名称
+     * T2主板打印串口名称
      */
     public static final String COM4_T2 = "/dev/ttyAMA4";
     /**
@@ -77,23 +79,23 @@ public class Global {
      */
     public static final String COM4_T3 = "/dev/ttySAC4";
 
-    public static final int CHANNEL_COUNT = 10;
+    public static final int CHANNEL_COUNT = 20;
 
     public static final byte[] GETALLDATA = "GetAllData".getBytes();
     /**
-     *已经被选中的通信串口的设备标号
+     * 已经被选中的通信串口的设备标号
      */
     public static int DEV_COM3 = -1;
     /**
-     *已经被选中的打印串口的设备标号
+     * 已经被选中的打印串口的设备标号
      */
     public static int DEV_COM4 = -1;
     /**
-     *通信串口波特率
+     * 通信串口波特率
      */
     public static final int BAUD_COM3 = 115200;
     /**
-     *打印串口波特率
+     * 打印串口波特率
      */
     public static final int BAUD_COM4 = 9600;
     /**
@@ -128,7 +130,7 @@ public class Global {
      */
 //    public static byte[] REACTION_INSTRUCTION = "FYTest".getBytes();
     /**
-     *比色指令
+     * 比色指令
      */
     public static byte[] BS_INSTRUCTION = "BSTest".getBytes();
     /**
@@ -149,28 +151,44 @@ public class Global {
 
 
     /**
-     *设备名称
+     * 设备名称
      */
     public static String ASSET_NAME = "";
 
 
     /**
-     *设备编码
+     * 设备编码
      */
     public static String ASSET_CODE = "";
 
 
-
     public static float singleXlz = 50;
 
-//    public static String uploadUrl = "http://kj.ahlssp.net/jc/dtrans";
+    //    public static String uploadUrl = "http://kj.ahlssp.net/jc/dtrans";
 //    public static String TESTING_UNIT_NAME="五显镇快检站";
 //    public static String TESTING_UNIT_NUMBER="341523111";
+    /**
+     * 泉州领航平台
+     */
     public static String uploadUrl = "https://qzsp.leadall.net/data/reception/detectData";
-//    public static String uploadUrl = "http://exchange.zjapt.com/Put.jws?wsdl";  //兆臻
-    public static String TESTING_UNIT_NAME="cs002";
-    public static String TESTING_UNIT_NUMBER="testwe2023";
+    //    public static String uploadUrl = "http://exchange.zjapt.com/Put.jws?wsdl";  //兆臻
+    public static String TESTING_UNIT_NAME = "cs002";
+    public static String TESTING_UNIT_NUMBER = "testwe2023";
 
+//    public static String YNM_UploadUrl = "";\
+    /**
+     * 云农贸
+     */
+//    public static String YNM_BaseUrl = "https://cloudtest.xinanshizu.com";
+//    public static String YNM_APP_ID = "xasztest";
+//    public static String YNM_APP_PW = "123456";
+//    public static String YNM_Token = "";
+    public static String YNM_BaseUrl = "http://lkapi3.linkunst.com/detector/index/Index";
+    public static String YNM_APP_ID = "farm-pub-qz";
+    public static String YNM_APP_PW = "b87vokkwxh13y65";
+    public static String YNM_Token = "";
+    public static String YNM_Login = "/auth/oauth/token";
+    public static String YNM_Upload = "/api/v2/merchant/test/updata";
 
     public static String getCurrentDate() {
         Date date = new Date();

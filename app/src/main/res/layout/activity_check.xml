@@ -44,19 +44,7 @@
                         style="@style/checkactivity_spinner_style" />
                 </TableRow>
 
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" >
 
-                    <TextView
-                        style="@style/checkactivity_textview_style"
-                        android:layout_marginRight="10dp"
-                        android:text="检验员:" />
-
-                    <Spinner
-                        android:id="@+id/check_persion_spinner"
-                        style="@style/checkactivity_spinner_style" />
-                </TableRow>
 
                 <TableRow
                     android:layout_width="match_parent"
@@ -73,7 +61,19 @@
 
                         style="@style/checkactivity_spinner_style" />
                 </TableRow>
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
 
+                    <TextView
+                        style="@style/checkactivity_textview_style"
+                        android:layout_marginRight="10dp"
+                        android:text="检测项目:" />
+
+                    <Spinner
+                        android:id="@+id/check_project_spinner"
+                        style="@style/checkactivity_spinner_style" />
+                </TableRow>
                 <TableRow
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" >
@@ -102,47 +102,6 @@
                         android:visibility="gone"/>
                 </TableRow>
 
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" >
-
-                    <TextView
-                        style="@style/checkactivity_textview_style"
-                        android:layout_marginRight="10dp"
-                        android:text="检测项目:" />
-
-                    <Spinner
-                        android:id="@+id/check_project_spinner"
-                        style="@style/checkactivity_spinner_style" />
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" >
-
-                    <TextView
-                        style="@style/checkactivity_textview_style"
-                        android:layout_marginRight="10dp"
-                        android:text="样品类型:" />
-
-                    <Spinner
-                        android:id="@+id/check_type_spinner"
-                        style="@style/checkactivity_spinner_style" />
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" >
-
-                    <TextView
-                        style="@style/checkactivity_textview_style"
-                        android:layout_marginRight="10dp"
-                        android:text="商户（摊位）:" />
-
-                    <Spinner
-                        android:id="@+id/checkactivity_sampleunit_spinner"
-                        style="@style/checkactivity_spinner_style" />
-                </TableRow>
 
                 <TableRow
                     android:layout_width="match_parent"
@@ -157,6 +116,53 @@
                         android:id="@+id/checkactivity_et_SampleNum"
                         style="@style/checkactivity_edittext_style" />
                 </TableRow>
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+
+                    <TextView
+                        style="@style/checkactivity_textview_style"
+                        android:layout_marginRight="10dp"
+                        android:text="样品类型:" />
+
+                    <Spinner
+                        android:id="@+id/check_type_spinner"
+                        android:visibility="gone"
+                        style="@style/checkactivity_spinner_style" />
+                    <TextView
+                        style="@style/checkactivity_textview_style"
+                        android:layout_marginRight="10dp"
+                        android:id="@+id/tv_sample_type"
+                        android:text="" />
+                </TableRow>
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+
+                    <TextView
+                        style="@style/checkactivity_textview_style"
+                        android:layout_marginRight="10dp"
+                        android:text="商户姓名:" />
+
+                    <Spinner
+                        android:id="@+id/check_persion_spinner"
+                        style="@style/checkactivity_spinner_style" />
+                </TableRow>
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+
+                    <TextView
+                        style="@style/checkactivity_textview_style"
+                        android:layout_marginRight="10dp"
+                        android:text="商户（摊位）:" />
+
+                    <Spinner
+                        android:id="@+id/checkactivity_sampleunit_spinner"
+                        style="@style/checkactivity_spinner_style" />
+                </TableRow>
+
+
 
                 <TableRow
                     android:layout_width="match_parent"
@@ -290,10 +296,19 @@
 
                 <Button
                     android:id="@+id/upload_data"
+                    android:visibility="gone"
                     style="@style/checkactivity_button_style"
                     android:background="@drawable/main_change_btu_shape"
                     android:enabled="false"
-                    android:text="上传数据"
+                    android:text="上传（泉州食安）"
+                    />
+
+                <Button
+                    android:id="@+id/upload_data2"
+                    style="@style/checkactivity_button_style"
+                    android:background="@drawable/main_change_btu_shape"
+                    android:enabled="false"
+                    android:text="上传"
                     />
 
                 <Button
