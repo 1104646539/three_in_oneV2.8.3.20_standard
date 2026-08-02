@@ -1,6 +1,6 @@
 package com.tnd.multifuction.util;
 
-
+import com.tnd.multifuction.BuildConfig;
 import com.tnd.multifuction.model.Project;
 
 import java.nio.charset.Charset;
@@ -14,6 +14,8 @@ import java.util.List;
  */
 
 public class Global {
+
+    public static boolean isCodeDebug = BuildConfig.DEBUG;
 
     public static Project project;
 
@@ -58,7 +60,7 @@ public class Global {
     /**
      * 数据库版本号
      */
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
 
     /**
      *T2主板通信串口名称

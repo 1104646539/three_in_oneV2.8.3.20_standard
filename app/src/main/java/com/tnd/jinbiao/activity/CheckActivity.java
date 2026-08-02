@@ -51,6 +51,7 @@ import com.tnd.multifuction.model.FiltrateModel;
 import com.tnd.multifuction.model.SampleName;
 import com.tnd.multifuction.thread.UploadThread;
 import com.tnd.multifuction.util.BrightCommandM;
+import com.tnd.multifuction.util.DebugDetectionData;
 import com.tnd.multifuction.util.Global;
 import com.tnd.multifuction.util.JsonUtil;
 import com.tnd.multifuction.util.SerialUtils;
@@ -1172,6 +1173,11 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
             return;
         }
         clearTestDataShow();
+
+        if (Global.isCodeDebug) {
+            CalcAndShowTestResult(DebugDetectionData.colloidalGoldResult());
+            return;
+        }
 
         String message = getTestInstruction();
         readTimeOutCount = 0;

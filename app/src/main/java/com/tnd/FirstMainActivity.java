@@ -42,7 +42,7 @@ public class FirstMainActivity extends Activity implements View.OnClickListener 
 
     private void initView() {
         tv_title = findViewById(R.id.tv_title);
-        tv_title.setText("多功能食品安全检测仪" + " V" + ToolUtils.getLocalVersionName(this) + "D");
+        tv_title.setText("多功能食品安全检测仪" + " V" + ToolUtils.getLocalVersionName(this));
         btn_open_1 = (Button) findViewById(R.id.btn_open_1);
         btn_open_2 = (Button) findViewById(R.id.btn_open_2);
         btn_open_3 = (Button) findViewById(R.id.btn_open_3);

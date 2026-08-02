@@ -16,7 +16,7 @@ public class SerialUtils {
 
 
     private static final String TAG = "SerialUtils";
-
+    private static final SerialFrameParser COM3_FRAME_PARSER = new SerialFrameParser();
     /**
      * 初始化串口
      */
@@ -71,6 +71,7 @@ public class SerialUtils {
     public static synchronized boolean COM3_SendData(byte[] data) {
 
         if (Global.DEV_COM3 > 0) {
+            COM3_FRAME_PARSER.clear();
             return sendData(data, Global.DEV_COM3);
         }
         return false;
@@ -111,6 +112,38 @@ public class SerialUtils {
         byte[] data = new byte[len];
         System.arraycopy(rec, 0, data, 0, len);
         return data;
+    }
+
+    /**
+     * Reads one complete newline-delimited response, retaining split or extra frames.
+     */
+    public static synchronized byte[] COM3_RevFrame(long timeoutMillis) {
+        byte[] queued = COM3_FRAME_PARSER.pollFrame();
+        if (queued != null) {
+            return queued;
+        }
+        long deadline = System.currentTimeMillis() + Math.max(0, timeoutMillis);
+        do {
+            byte[] rec = new byte[1024];
+            int len = HardwareControler.read(Global.DEV_COM3, rec, rec.length);
+            if (len > 0) {
+                COM3_FRAME_PARSER.append(rec, len);
+                byte[] frame = COM3_FRAME_PARSER.pollFrame();
+                if (frame != null) {
+                    return frame;
+                }
+            }
+            if (System.currentTimeMillis() >= deadline) {
+                break;
+            }
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        } while (true);
+        return null;
     }
 
     /**

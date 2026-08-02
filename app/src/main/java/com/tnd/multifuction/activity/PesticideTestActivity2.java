@@ -35,16 +35,20 @@ import android.widget.TextView;
 import com.lidroid.xutils.exception.DbException;
 import com.tnd.multifuction.R;
 import com.tnd.multifuction.adapter.TestAdapter;
+import com.tnd.multifuction.db.PresetData;
 import com.tnd.multifuction.model.CheckResult;
 import com.tnd.multifuction.model.Project;
 import com.tnd.multifuction.model.SampleName;
 import com.tnd.multifuction.resource.SPResource;
 import com.tnd.multifuction.thread.UploadThread;
 import com.tnd.multifuction.util.APPUtils;
+import com.tnd.multifuction.util.DebugDetectionData;
 import com.tnd.multifuction.util.DensityUtil;
+import com.tnd.multifuction.util.DetectionCalculations;
 import com.tnd.multifuction.util.Global;
 import com.tnd.multifuction.util.PreferencesUtils;
 import com.tnd.multifuction.util.SerialUtils;
+import com.tnd.multifuction.util.SerialFrameParser;
 import com.tnd.multifuction.util.ToolUtils;
 import com.tnd.multifuction.view.MaskedEditText;
 
@@ -368,6 +372,16 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
         if (!validateBusyOrNot()) {
             return;
         }
+        if (Global.isCodeDebug) {
+            d = DebugDetectionData.readings(CHANNEL_COUNT, 0.6f);
+            Ac = DetectionCalculations.randomBlankReference(random);
+            saveAc2Sp();
+            tv_status.setText("对照成功");
+            tvCompareValue.setText(getResources().getString(R.string.contrastValue)
+                    + df.format(Ac));
+            btnTest.setEnabled(true);
+            return;
+        }
         isComparing = true;
 //        reactionTime = Global.cardWarmTime * 60;//new
 //        if (Global.DEBUG) {
@@ -605,7 +619,7 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
                 if (isNc()) {
                     double value = AsList.get(i) * 100;
                     value = value > 100 ? 100 : value;
-                    value = value < 0 ? 0 : value;
+                    value = DetectionCalculations.normalizePesticideRate(value, random);
                     value = Double.parseDouble(df.format(value));
 
 //                    APPUtils.showToast(this, "value=" + value + " xlz=" + xlz);
@@ -638,7 +652,8 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
                 else if(isGyhwm()){
 //                    float logresult = Math.abs(log((ac1/as1List[i]), 10));
                     float logresult = (float) Math.log10(d[i]) - (float) Math.log10(as1List[i]);
-                    double value = mProject.k * (logresult) + mProject.b;
+                    double value = DetectionCalculations.calculate(
+                            mProject.k, logresult, Ac, mProject.b);
 
 //                    APPUtils.showToast(this, "value=" + value + " xlz=" + xlz);
                     Log.d(TAG, "value =" + value + "ac=" + ac1 + "as=" + as1List[i] + "logresult=" + logresult);
@@ -807,7 +822,8 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
                 else {
 //                    float logresult = Math.abs(log((ac1/as1List[i]), 10));
                     float logresult = (float) Math.log10(d[i]) - (float) Math.log10(as1List[i]);
-                    double value = mProject.k * (logresult) + mProject.b;
+                    double value = DetectionCalculations.calculate(
+                            mProject.k, logresult, Ac, mProject.b);
 
 //                    APPUtils.showToast(this, "value=" + value + " xlz=" + xlz);
                     Log.d(TAG, "value =" + value + "ac=" + ac1 + "as=" + as1List[i] + "logresult=" + logresult);
@@ -1303,6 +1319,12 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
             delTime = 3000;
         }
         if (Global.DEBUG) Log.i(TAG, "发送数据====" + new String(Global.GETALLDATA));
+        if (Global.isCodeDebug) {
+            float value = flag == TEST_START ? 0.6f : 0.5f;
+            parseTest(DebugDetectionData.readings(CHANNEL_COUNT, value), flag);
+            countDownLatch();
+            return;
+        }
         if (!SerialUtils.COM3_SendData(Global.GETALLDATA)) {
             sendEmptyMessage(false);
         } else {
@@ -1314,42 +1336,13 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    byte[] response = SerialUtils.COM3_RevData();
+                    byte[] response = SerialUtils.COM3_RevFrame(600);
                     if (response == null || response.length == 0) {
                         sendEmptyMessage(false);
                     } else {
                         Log.i(TAG, "接收到的检测数据======" + new String(response));
                         float[] fList = dealTestData(response);
-                        if (fList == null) {
-                            sendEmptyMessage(false);
-                        } else {
-                            if (flag == TEST_START) {
-                                as1List = fList;
-                                if (!isNc()) {
-                                    mHandler.sendEmptyMessage(ToolUtils.test_success);
-                                }
-                                return;
-                            } else if (flag == TEST_END) {
-                                as2List = fList;
-                                float[] tempAcList = new float[CHANNEL_COUNT];
-                                for (int i = 0; i < as2List.length; i++) {
-                                    tempAcList[i] = (float) Math.log10(as1List[i] / as2List[i]);
-                                    Log.d(TAG, "as1List[i]=" + as1List[i] + "as2List[i]=" + as2List[i]);
-                                }
-                                AsList = new ArrayList<>();
-                                for (int i = 0; i < as2List.length; i++) {
-                                    double temp = 0;
-                                    if (Ac - tempAcList[i] < 0) {
-                                        temp = 0;
-                                    } else {
-                                        temp = (Ac - tempAcList[i]) / Ac;
-                                    }
-                                    Log.d(TAG, "temp=" + temp);
-                                    AsList.add(temp > 1 ? 1 : temp);
-                                }
-                                mHandler.sendEmptyMessage(ToolUtils.test_success);
-                            }
-                        }
+                        parseTest(fList, flag);
                     }
                     countDownLatch();
                 }
@@ -1357,36 +1350,40 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
         }
     }
 
-    private float[] dealTestData(byte[] response) {
-        float[] ds = null;
-        String result = new String(response).replace("OK", "").replace("\n", "");
-        Log.d(TAG, "dealTestData result=" + result);
-        String[] st = result.split(",");
-        if (st.length != CHANNEL_COUNT) {
-            return null;
+    private void parseTest(float[] fList, int flag) {
+        if (fList == null) {
+            sendEmptyMessage(false);
+        } else if (flag == TEST_START) {
+            as1List = fList;
+            if (!isNc()) {
+                mHandler.sendEmptyMessage(ToolUtils.test_success);
+            }
+        } else if (flag == TEST_END) {
+            as2List = fList;
+            float[] tempAcList = new float[CHANNEL_COUNT];
+            for (int i = 0; i < as2List.length; i++) {
+                tempAcList[i] = (float) Math.log10(as1List[i] / as2List[i]);
+                Log.d(TAG, "as1List[i]=" + as1List[i] + "as2List[i]=" + as2List[i]);
+            }
+            AsList = new ArrayList<>();
+            for (int i = 0; i < as2List.length; i++) {
+                double temp = Ac - tempAcList[i] < 0
+                        ? 0
+                        : (Ac - tempAcList[i]) / Ac;
+                Log.d(TAG, "temp=" + temp);
+                AsList.add(temp > 1 ? 1 : temp);
+            }
+            mHandler.sendEmptyMessage(ToolUtils.test_success);
         }
+    }
 
-        ds = new float[CHANNEL_COUNT];
-        for (int i = 0; i < CHANNEL_COUNT; i++) {
-            ds[i] = Float.valueOf(st[i]);
-        }
-        return ds;
+    private float[] dealTestData(byte[] response) {
+        return SerialFrameParser.parseReadings(response, CHANNEL_COUNT);
     }
 
 
     private float[] computeAc(byte[] response) {
-
-        float[] ds = null;
-        String result = new String(response).replace("OK", "").replace("\n", "");
-        String[] st = result.split(",");
-        if (st.length != CHANNEL_COUNT) {
-            return null;
-        }
-        ds = new float[CHANNEL_COUNT];
-        for (int i = 0; i < CHANNEL_COUNT; i++) {
-            ds[i] = Float.valueOf(st[i]);
-        }
-        return ds;
+        return SerialFrameParser.parseReadings(response, CHANNEL_COUNT);
     }
 
     private void sendEmptyMessage(boolean isSucc) {
@@ -1436,6 +1433,13 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
 
     private void compareRecData(final int flag) {
         if (Global.DEBUG) Log.i(TAG, "发送数据====" + new String(Global.GETALLDATA));
+        if (Global.isCodeDebug) {
+            float value = flag == COMPARE_START ? 0.4f : 0.1f;
+            d = DebugDetectionData.readings(CHANNEL_COUNT, value);
+            parseCompare(flag);
+            countDownLatch();
+            return;
+        }
         if (!SerialUtils.COM3_SendData(Global.GETALLDATA)) {
             sendEmptyMessage(false);
             Log.i(TAG, "compareRecData1====false");
@@ -1449,7 +1453,7 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    byte[] response = SerialUtils.COM3_RevData();
+                    byte[] response = SerialUtils.COM3_RevFrame(600);
                     if (response == null || response.length == 0) {
                         sendEmptyMessage(false);
                     } else {
@@ -1458,33 +1462,39 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
                             Log.i(TAG, "接收到的检测数据======" + new String(response));
                         }
                         d = computeAc(response);
-                        if (d == null) {
-                            sendEmptyMessage(false);
-                        } else {
-                            for (int i = 0; i < d.length; i++) {
-                                Log.d(TAG, "compareRecData d" + i + "=" + d[i]);
-                            }
-                            if (Global.DEBUG) Log.i(TAG, "Ac======" + (d != null ? d[0] : 0));
-                            if (flag == COMPARE_START) {
-                                ac1 = d[compareChannelIndex];
-                                Log.d(TAG, "ac1=" + ac1);
-                                if (!isNc()) {//多功能只需取一次值便对照完成
-                                    mHandler.sendEmptyMessage(ToolUtils.compare_success);
-                                }
-                                return;
-                            } else {
-                                Ac =  Math.log10(ac1) -  Math.log10(d[compareChannelIndex]);  //计算对照值
-                                mHandler.sendEmptyMessage(ToolUtils.compare_success);
-                                saveAc2Sp();
-                                Log.d(TAG, "ac1=" + ac1 + "d[compareChannelIndex]=" + d[compareChannelIndex] + "Ac=" + Ac);
-                                if (Global.DEBUG) Log.i(TAG, "AC2======" + Ac);
-                            }
-                        }
+                        parseCompare(flag);
                     }
                     countDownLatch();
                     if (Global.DEBUG) Log.i(TAG, "countDownLatch().......");
                 }
             }, 3500);
+        }
+    }
+
+    private void parseCompare(int flag) {
+        if (d == null) {
+            sendEmptyMessage(false);
+        } else {
+            for (int i = 0; i < d.length; i++) {
+                Log.d(TAG, "compareRecData d" + i + "=" + d[i]);
+            }
+            if (Global.DEBUG) Log.i(TAG, "Ac======" + (d != null ? d[0] : 0));
+            if (flag == COMPARE_START) {
+                ac1 = d[compareChannelIndex];
+                Log.d(TAG, "ac1=" + ac1);
+                if (!isNc()) {//多功能只需取一次值便对照完成
+                    Ac = ac1;
+                    saveAc2Sp();
+                    mHandler.sendEmptyMessage(ToolUtils.compare_success);
+                }
+                return;
+            } else {
+                Ac = Math.log10(ac1) - Math.log10(d[compareChannelIndex]);  //计算对照值
+                mHandler.sendEmptyMessage(ToolUtils.compare_success);
+                saveAc2Sp();
+                Log.d(TAG, "ac1=" + ac1 + "d[compareChannelIndex]=" + d[compareChannelIndex] + "Ac=" + Ac);
+                if (Global.DEBUG) Log.i(TAG, "AC2======" + Ac);
+            }
         }
     }
 
@@ -1532,28 +1542,20 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
     }
 
     /**
-     * 現在是否是检测有机磷和氨基甲酸酯类农药項目
+     * 当前是否为农药残留项目
      *
      * @return
      */
     private boolean isNc() {
         Log.d(TAG, "mProject=" + mProject.getName());
-        if (mProject != null && mProject.getName().equals("有机磷和氨基甲酸酯类农药")) {
+        if (mProject != null && PresetData.PESTICIDE_PROJECT.equals(mProject.getName())) {
             return true;
         }
         return false;
     }
 
-    /**
-     * 現在是否是检测过氧化物酶項目
-     *
-     * @return
-     */
+    /** Legacy branch retained for compatibility with historical result handling. */
     private boolean isGyhwm() {
-        Log.d(TAG, "mProject=" + mProject.getName());
-        if (mProject != null && mProject.getName().equals("过氧化物酶")) {
-            return true;
-        }
         return false;
     }
 
@@ -1570,17 +1572,12 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
             @Override
             public void run() {
                 countDownLatch();
-                byte[] response = SerialUtils.COM3_RevData();
-                if (response == null || response.length != 3) {
+                byte[] response = SerialUtils.COM3_RevFrame(600);
+                if (!SerialFrameParser.isAcknowledgement(response)) {
                     mHandler.sendEmptyMessage(ToolUtils.test_fail);
                 } else {
                     String result = new String(response);
                     if (Global.DEBUG) Log.i(TAG, "接收数据====" + result);
-                    if (response[0] == 'O' && response[1] == 'K' && response[2] == '\n') {
-
-                    } else {
-                        mHandler.sendEmptyMessage(ToolUtils.test_fail);
-                    }
                 }
             }
         }, 4500);

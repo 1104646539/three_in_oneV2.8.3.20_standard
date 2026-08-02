@@ -22,8 +22,8 @@ android {
         applicationId "com.tnd.multifuction"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 1
-        versionName "2.8"
+        versionCode 4
+        versionName "4.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         packagingOptions {
             //解决编译时com.android.builder.merge.DuplicateRelativeFileException: More than one file was found with OS independent path 'META-INF/rxjava.properties'这个错误
@@ -54,7 +54,9 @@ android {
             appName = parent.name
         }
         variant.outputs.all { output ->
-            outputFileName = "多功能食品安全检测仪(三合一)V"+ versionName + ".apk"
+            def abi = output.getFilter(com.android.build.OutputFile.ABI)
+            def abiSuffix = abi == null ? "universal" : abi
+            outputFileName = "多功能食品安全检测仪(三合一)V" + versionName + "-" + abiSuffix + ".apk"
         }
     }
 

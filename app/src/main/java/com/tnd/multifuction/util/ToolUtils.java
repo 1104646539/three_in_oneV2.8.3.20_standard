@@ -43,6 +43,7 @@ import android.widget.DatePicker;
 
 import com.tnd.multifuction.activity.MainActivity;
 import com.tnd.multifuction.db.DbHelper;
+import com.tnd.multifuction.db.PresetData;
 import com.tnd.multifuction.model.CheckResult;
 import com.tnd.multifuction.model.Print;
 import com.tnd.multifuction.model.Project;
@@ -263,7 +264,7 @@ public class ToolUtils {
                 }
                 sb.append("检测项目:"+ "\n");
                 sb.append(result.projectName + "\n");
-                if ("有机磷和氨基甲酸酯类农药".equals(result.projectName)) {
+                if (PresetData.PESTICIDE_PROJECT.equals(result.projectName)) {
                     sb.append("抑制率:");
                 } else {
                     sb.append("检测值:");
@@ -323,7 +324,7 @@ public class ToolUtils {
             sb.append(merge("检测", 15) + " "
                     + ToolUtils.long2String(resultList.get(0).testTime,
                     "yyyy-MM-dd") + "\n\n");
-            if (resultList.get(0).projectName.equals("有机磷和氨基甲酸酯类农药")) {
+            if (PresetData.PESTICIDE_PROJECT.equals(resultList.get(0).projectName)) {
                 sb.append("通道号  " + "" + "" + "抑制率 " + "" + "判定结果 " +
                         "样品名称 " + "" + "\n");
             } else {
@@ -416,7 +417,7 @@ public class ToolUtils {
 
                     SerialUtils.COM4_SendData(("样品名称:").getBytes(Charset.forName("GB2312")));
                     SerialUtils.COM4_SendData((result.sampleName + "\n").getBytes(Charset.forName("GB2312")));
-                    if("有机磷和氨基甲酸酯类农药".equals(result.projectName)){
+                    if(PresetData.PESTICIDE_PROJECT.equals(result.projectName)){
                         SerialUtils.COM4_SendData(("检测项目:" + "\n").getBytes(Charset.forName("GB2312")));
                         SerialUtils.COM4_SendData((result.projectName + "\n").getBytes(Charset.forName("GB2312")));
                     }else{
@@ -433,7 +434,7 @@ public class ToolUtils {
                             break;
                         }
                     }
-                    if ("有机磷和氨基甲酸酯类农药".equals(result.projectName)) {
+                    if (PresetData.PESTICIDE_PROJECT.equals(result.projectName)) {
 
                         SerialUtils.COM4_SendData(("抑制率:").getBytes(Charset.forName("GB2312")));
                         SerialUtils.COM4_SendData((result.testValue + "\n").getBytes(Charset.forName("GB2312")));
@@ -545,7 +546,7 @@ public class ToolUtils {
 
                     SerialUtils.COM4_SendData(("样品名称:").getBytes(Charset.forName("GB2312")));
                     SerialUtils.COM4_SendData((result.sampleName + "\n").getBytes(Charset.forName("GB2312")));
-                    if("有机磷和氨基甲酸酯类农药".equals(result.projectName)){
+                    if(PresetData.PESTICIDE_PROJECT.equals(result.projectName)){
                         SerialUtils.COM4_SendData(("检测项目:" + "\n").getBytes(Charset.forName("GB2312")));
                         SerialUtils.COM4_SendData((result.projectName + "\n").getBytes(Charset.forName("GB2312")));
                     }else{
@@ -562,7 +563,7 @@ public class ToolUtils {
                             break;
                         }
                     }
-                    if ("有机磷和氨基甲酸酯类农药".equals(result.projectName)) {
+                    if (PresetData.PESTICIDE_PROJECT.equals(result.projectName)) {
 
                         SerialUtils.COM4_SendData(("抑制率:").getBytes(Charset.forName("GB2312")));
                         SerialUtils.COM4_SendData((result.testValue + "\n").getBytes(Charset.forName("GB2312")));
@@ -711,7 +712,7 @@ public class ToolUtils {
             SerialUtils.COM4_SendData(BrightCommandM.t1b63(0));
             SerialUtils.COM4_SendData(BrightCommandM.t1b61(0));
             SerialUtils.COM4_SendData("\n".getBytes());
-            if("有机磷和氨基甲酸酯类农药".equals(resultList.get(0).projectName)){
+            if(PresetData.PESTICIDE_PROJECT.equals(resultList.get(0).projectName)){
                 SerialUtils.COM4_SendData(("检测项目："+"\n").getBytes(Charset.forName("GB2312")));
                 SerialUtils.COM4_SendData((resultList.get(0).projectName + "\n").getBytes(Charset.forName("GB2312")));
             }else{
@@ -721,7 +722,7 @@ public class ToolUtils {
             SerialUtils.COM4_SendData((merge("检测时间：", 15).getBytes(Charset.forName("GB2312"))));
             SerialUtils.COM4_SendData(ToolUtils.long2String(resultList.get(0).testTime, "yyyy-MM-dd").getBytes(Charset.forName("GB2312")));
             SerialUtils.COM4_SendData("\n".getBytes());
-            if(resultList.get(0).projectName.equals("有机磷和氨基甲酸酯类农药")){
+            if(PresetData.PESTICIDE_PROJECT.equals(resultList.get(0).projectName)){
                 SerialUtils.COM4_SendData((merge("通道号  " + "" + "" + "样品名称 " + "" + "抑制率 " +
                         "判定结果 " + "" + "\n", 15).getBytes(Charset.forName("GB2312"))));
             }else{
@@ -760,7 +761,7 @@ public class ToolUtils {
 
     private static String getData(CheckResult result, Context context) {
         StringBuilder sb = new StringBuilder();
-        if("有机磷和氨基甲酸酯类农药".equals(result.projectName)){
+        if(PresetData.PESTICIDE_PROJECT.equals(result.projectName)){
             sb.append("检测项目：");
             sb.append("\n" + result.projectName);
         }else{
@@ -778,7 +779,7 @@ public class ToolUtils {
         sb.append("\n被检单位：" + result.bcheckedOrganization);
         sb.append("\n商品来源:" + result.sampleSource);
         sb.append("\n检测人员：" + result.checker);
-        if ("有机磷和氨基甲酸酯类农药".equals(result.projectName)) {
+        if (PresetData.PESTICIDE_PROJECT.equals(result.projectName)) {
             sb.append("\n对照值：" + PreferencesUtils.getString(context, "Ac"));
             sb.append("\n抑制率：" + result.testValue);
         } else {
@@ -861,14 +862,14 @@ public class ToolUtils {
                     sb.append("重量/Kg:");
                     sb.append(result.weight + "\n");
                 }
-                if("有机磷和氨基甲酸酯类农药".equals(result.projectName)){
+                if(PresetData.PESTICIDE_PROJECT.equals(result.projectName)){
                     sb.append("检测项目:"+ "\n");
                     sb.append(result.projectName + "\n");
                 }else{
                     sb.append("检测项目:");
                     sb.append(result.projectName + "\n");
                 }
-                if (result.projectName.equals("有机磷和氨基甲酸酯类农药")) {
+                if (PresetData.PESTICIDE_PROJECT.equals(result.projectName)) {
                     sb.append("抑制率:");
                 } else {
                     sb.append("检测值:");
@@ -927,7 +928,7 @@ public class ToolUtils {
             sb.append(merge("检测", 15) + " "
                     + ToolUtils.long2String(resultList.get(0).testTime,
                     "yyyy-MM-dd") + "\n\n");
-            if (resultList.get(0).projectName.equals("有机磷和氨基甲酸酯类农药")) {
+            if (PresetData.PESTICIDE_PROJECT.equals(resultList.get(0).projectName)) {
                 sb.append("通道号  " + "" + "" + "抑制率 " + "" + "判定结果 " +
                         "样品名称 " + "\n");
             } else {
@@ -1001,7 +1002,7 @@ public class ToolUtils {
         StringBuilder sb = new StringBuilder("\n\n\n检测报告单\n\n\n");
         for (int i = 0; i < resultList.size(); i++) {
             CheckResult result = resultList.get(i);
-            if("有机磷和氨基甲酸酯类农药".equals(result.projectName)){
+            if(PresetData.PESTICIDE_PROJECT.equals(result.projectName)){
                 sb.append("检测项目:"+ "\n");
                 sb.append(result.projectName + "\n");
             }else{

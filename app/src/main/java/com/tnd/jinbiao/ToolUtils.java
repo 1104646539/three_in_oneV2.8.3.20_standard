@@ -71,7 +71,9 @@ public class ToolUtils {
     }
 
     public static void hiddenHUD() {
-        kp_hud.dismiss();
+        if (kp_hud != null && kp_hud.isShowing()) {
+            kp_hud.dismiss();
+        }
     }
 
     public static Bitmap getPicUrlWithBitmap(Context context, String name) {

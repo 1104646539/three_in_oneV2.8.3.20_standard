@@ -228,38 +228,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     private void initData() {
         if (isFirst) {
-//            Project project = new Project("",
-//                    "有机磷和氨基甲酸酯类农药",
-//                    "GB/T 5009.199", 0f, 1f, 0f, 410,"%");
-//            project.save(project);
-            dbUtils = DbHelper.GetInstance();
-            try {
-                dbUtils.save(new Project("", "过氧化物酶", "GB/T 5009.199", 20.0f,0.097f,-0.0087f, 410,"ug/ml"));
-                dbUtils.save(new Project("", "重金属镉", "GB/T 5009.199", 0.25f,4.39f,-0.16f, 535,"mg/kg"));
-                dbUtils.save(new Project("", "过氧化苯甲酰", "GB/T 5009.199", 0.09f,0.79f,0.05f, 535,"mg/kg"));
-                dbUtils.save(new Project("", "谷氨酸钠", "GB/T 5009.199", 1f,108f,-6f, 410,"mg/kg"));
-                dbUtils.save(new Project("", "硫酸镁", "GB/T 5009.199", 0.09f,0.79f,0.05f, 535,"mg/kg"));
-                dbUtils.save(new Project("", "甜蜜素", "GB/T 5009.199", 0.6f, 7.66f,0.18f, 535,"mg/kg"));
-                dbUtils.save(new Project("", "重金属铬", "GB/T 5009.199", 0.1f, 1.15f,0.07f, 535,"mg/kg"));
-                dbUtils.save(new Project("", "硝酸盐", "GB/T 5009.199", 0.7f, 10.7005f,-0.327f, 535,"mg/kg"));
-                dbUtils.save(new Project("", "挥发性盐基氮", "GB/T 5009.199", 20.0f,25.18f, -1.1f, 590,"mg/kg"));
-                dbUtils.save(new Project("", "糖精钠", "GB/T 5009.199", 1f, 0.46f, -0.01f, 590,"mg/kg"));
-                dbUtils.save(new Project("", "溴酸钾", "GB/T 5009.199", 0.5f, 139.7f, -6.02f, 535,"mg/kg"));
-                dbUtils.save(new Project("", "山梨酸钾", "GB/T 5009.199", 20.0f,2.97f,-0.02f, 535,"mg/kg"));
-                dbUtils.save(new Project("", "重金属铅", "GB/T 5009.199", 0.2f, 13.94f, -1.15f, 535,"mg/kg"));
-                dbUtils.save(new Project("", "硫酸铝钾", "GB/T 5009.199", 2.0f, 251.18f,-13.11f, 535,"mg/kg"));
-                dbUtils.save(new Project("", "甲醇", "GB/T 5009.199", 0.2f,3.2993f , -0.0235f, 410,"mg/kg"));
-                dbUtils.save(new Project("", "硼砂", "GB/T 5009.199", 5.0f, 106.07f, -2.30f, 410,"mg/kg"));
-                dbUtils.save(new Project("", "双氧水", "GB/T 5009.199", 10.0f, 360.84f, -11.02f, 410,"mg/kg"));
-                dbUtils.save(new Project("", "二氧化硫", "GB/T 5009.199", 10.0f, 254.79f, -3.4248f, 410,"mg/kg"));
-                dbUtils.save(new Project("", "亚硝酸盐", "GB/T 5009.199", 1.0f,35.108f,-1.6583f, 535,"mg/kg"));
-                dbUtils.save(new Project("", "吊白块", "GB/T 5009.199", 10.0f, 16.467f, -3.1276f, 410,"mg/kg"));
-                dbUtils.save(new Project("", "甲醛", "GB/T 5009.199", 1.0f,16.467f,-3.1276f, 410,"mg/kg"));
-                dbUtils.save(new Project("", "有机磷和氨基甲酸酯类农药", "GB/T 5009.199", 0f, 1f, 0f, 410,"%"));
-            } catch (DbException e) {
-                e.printStackTrace();
-            }
-
             projects = (ArrayList<Project>) new Project().findAll();
             initXlzMap();
         } else {
