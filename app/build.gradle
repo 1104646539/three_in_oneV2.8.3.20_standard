@@ -9,19 +9,11 @@ android {
             storePassword '123456'
         }
     }
-    splits {
-        abi {
-            enable true
-            reset()
-            include 'x86', 'armeabi-v7a','x86_64'
-            universalApk true
-        }
-    }
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.tnd.multifuction"
         minSdkVersion 21
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 1
         versionName "2.13"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -47,14 +39,8 @@ android {
     }
     //自动生成指定名称的release发布版的 apk文件
     android.applicationVariants.all { variant ->
-        def appName
-        if (project.hasProperty("applicationName")) {
-            appName = applicationName
-        } else {
-            appName = parent.name
-        }
         variant.outputs.all { output ->
-            outputFileName = "多功能食品安全检测仪(三合一)V"+ versionName + ".apk"
+            outputFileName = "多功能食品安全检测仪(三合一)V" + versionName + ".apk"
         }
     }
 
@@ -64,14 +50,6 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-//    splits {
-//        abi {
-//            enable true
-//            reset()
-//            include 'x86', 'armeabi-v7a'
-//            universalApk true
-//        }
-//    }
 }
 
 dependencies {
