@@ -14,6 +14,7 @@ public final class DetectionCalculations {
     public static double calculate(double k, double measuredValue,
                                    double blankReference, double b) {
         return k * (measuredValue - blankReference) + b;
+//        return k * (measuredValue ) + b;
     }
 
     public static double normalizePesticideRate(double calculatedRate, Random random) {
@@ -25,6 +26,6 @@ public final class DetectionCalculations {
     }
 
     public static double randomBlankReference(Random random) {
-        return 0.3d + random.nextDouble() * 0.6d;
+        return 0.3d + random.nextDouble() % 0.5;
     }
 }

@@ -3,7 +3,7 @@ package com.tnd.multifuction.db;
 /** V4.0 factory presets from the approved instrument preset document. */
 public final class PresetData {
 
-    public static final String PESTICIDE_PROJECT = "农药残留";
+    public static final String PESTICIDE_PROJECT = "有机磷和氨基甲酸酯类农药";
     public static final String CARD_COMPANY = "浩景A";
     public static final String SCAN_START = "300";
     public static final String SCAN_END = "940";
@@ -11,7 +11,6 @@ public final class PresetData {
     public static final String CT_WIDTH = "120";
 
     public static final ProjectPreset[] PROJECTS = {
-            new ProjectPreset(PESTICIDE_PROJECT, 410, 0f, 1f, 0f, "%"),
             new ProjectPreset("甲醛", 410, 1.0f, 16.467f, -3.1276f, "mg/kg"),
             new ProjectPreset("吊白块", 410, 10.0f, 16.467f, -3.1276f, "mg/kg"),
             new ProjectPreset("亚硝酸盐", 535, 1.0f, 35.108f, -1.6583f, "mg/kg"),
@@ -31,7 +30,8 @@ public final class PresetData {
             new ProjectPreset("过氧化苯甲酰", 535, 0.09f, 0.79f, 0.05f, "mg/kg"),
             new ProjectPreset("谷氨酸钠", 410, 1f, 108f, -6f, "mg/kg"),
             new ProjectPreset("硫酸镁", 535, 0.09f, 0.79f, 0.05f, "mg/kg"),
-            new ProjectPreset("甜蜜素", 535, 0.6f, 7.66f, 0.18f, "mg/kg")
+            new ProjectPreset("甜蜜素", 535, 0.6f, 7.66f, 0.18f, "mg/kg"),
+            new ProjectPreset(PESTICIDE_PROJECT, 410, 0f, 1f, 0f, "%"),
     };
 
     public static final String[] SAMPLE_TYPES = {

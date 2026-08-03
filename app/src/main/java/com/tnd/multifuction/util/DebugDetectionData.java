@@ -1,8 +1,11 @@
 package com.tnd.multifuction.util;
 
 import java.util.Arrays;
+import java.util.Random;
 
-/** Deterministic detector responses used when no lower controller is connected. */
+/**
+ * Deterministic detector responses used when no lower controller is connected.
+ */
 public final class DebugDetectionData {
 
     private DebugDetectionData() {
@@ -13,7 +16,10 @@ public final class DebugDetectionData {
             throw new IllegalArgumentException("channelCount must be positive");
         }
         float[] readings = new float[channelCount];
-        Arrays.fill(readings, value);
+        for (int i = 0; i < readings.length; i++) {
+            readings[i] = Math.abs(new Random().nextInt() * 100 % value);
+        }
+//        Arrays.fill(readings, value);
         return readings;
     }
 

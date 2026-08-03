@@ -31,6 +31,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.lidroid.xutils.exception.DbException;
 import com.tnd.multifuction.R;
@@ -177,7 +178,6 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
 //        openLight(mProject.bochang);
         btnUpload = findViewById(R.id.btn_upload);
         btnUpload.setOnClickListener(this);
-
 
 
         LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -328,9 +328,9 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
         isUploading = true;
 
         List<CheckResult> uploadList = null;
-            if (autoUpload) {
-                uploadList = resultList;
-            }
+        if (autoUpload) {
+            uploadList = resultList;
+        }
         UploadThread t = new UploadThread(this, uploadList, new UploadThread.onUploadListener() {
             @Override
             public void onSuccess(List<CheckResult> list, int returnId, int position, String result) {
@@ -345,7 +345,7 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
             @Override
             public void onFail(String failInfo) {
                 if (!act.isFinishing()) {
-                    runOnUiThread(()->APPUtils.showToast(act,failInfo));
+                    runOnUiThread(() -> APPUtils.showToast(act, failInfo));
                 }
             }
         });
@@ -356,7 +356,6 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
 
         new CheckResult().updateAll(list, new String[]{"uploadId"});
     }
-
 
 
     private int compareChannelIndex = 0;
@@ -522,16 +521,16 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case ToolUtils.test_fail:
-                    Log.d("jiance","ToolUtils.test_fail"+ToolUtils.test_fail);
+                    Log.d("jiance", "ToolUtils.test_fail" + ToolUtils.test_fail);
                     failHandle();
                     break;
                 case ToolUtils.update_countdown:
-                    Log.d("jiance","ToolUtils.update_countdown"+ToolUtils.update_countdown);
+                    Log.d("jiance", "ToolUtils.update_countdown" + ToolUtils.update_countdown);
                     int i = (int) msg.obj;
                     tv_status.setText("检测中: " + i + "s");
                     break;
                 case ToolUtils.test_success:
-                    Log.d("jiance","ToolUtils.test_success"+ToolUtils.test_success);
+                    Log.d("jiance", "ToolUtils.test_success" + ToolUtils.test_success);
                     isTesting = false;
                     showTestResult();
                     if (Global.uploadModel == 1) {
@@ -542,17 +541,18 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
                     spn_project.setEnabled(true);
                     break;
                 case ToolUtils.testing:
-                    Log.d("jiance","ToolUtils.testing"+ToolUtils.testing);
+                    Log.d("jiance", "ToolUtils.testing" + ToolUtils.testing);
                     tv_status.setText("检测中...");
                     break;
                 case ToolUtils.compare_fail:
-                    Log.d("jiance","ToolUtils.compare_fail"+ToolUtils.compare_fail);
+                    Log.d("jiance", "ToolUtils.compare_fail" + ToolUtils.compare_fail);
                     failHandle();
                     break;
                 case ToolUtils.compare_success:
-                    Log.d("jiance","ToolUtils.compare_success"+ToolUtils.compare_success);
+                    Log.d("jiance", "ToolUtils.compare_success" + ToolUtils.compare_success);
                     isComparing = false;
                     spn_project.setEnabled(true);
+                    Toast.makeText(act, "对照结果：" + Ac, Toast.LENGTH_SHORT).show();
                     if (isNc()) {
                         if (Ac < COMPARE_MIN_VALUE) {
 //                            APPUtils.showToast(PesticideTestActivity2.this,"ac="+Ac);
@@ -648,8 +648,7 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
                     resultList.set(i, tempResult);
                     savaDatas.add(tempResult);
                     index++;
-                }
-                else if(isGyhwm()){
+                } else if (isGyhwm()) {
 //                    float logresult = Math.abs(log((ac1/as1List[i]), 10));
                     float logresult = (float) Math.log10(d[i]) - (float) Math.log10(as1List[i]);
                     double value = DetectionCalculations.calculate(
@@ -753,7 +752,7 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
                                 Global.project.unit);
 
 
-                    }  else if (xlz == 555) {
+                    } else if (xlz == 555) {
                         Log.d(TAG, "value a=" + value);
                         Log.d(TAG, "i=" + i + " value=" + value + " xlz=" + xlz);
 //                        APPUtils.showToast(this, "value=" + value + " xlz=" + xlz);
@@ -818,15 +817,16 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
                     savaDatas.add(tempResult);
 
                     index++;
-                }
-                else {
+                } else {
 //                    float logresult = Math.abs(log((ac1/as1List[i]), 10));
                     float logresult = (float) Math.log10(d[i]) - (float) Math.log10(as1List[i]);
                     double value = DetectionCalculations.calculate(
                             mProject.k, logresult, Ac, mProject.b);
-
+                    Toast.makeText(act, "检测结果：value=" + value + " k=" + mProject.k + " b=" + mProject.b + " Ac=" + Ac + " logresult=" + logresult, Toast.LENGTH_LONG).show();
+                    Log.d(TAG, "检测结果：value=" + value + " k=" + mProject.k + " b=" + mProject.b + " Ac=" + Ac + " logresult=" + logresult);
+                    Log.d(TAG, "d[i]=" + d[i] + " as1List[i]=" + as1List[i]);
 //                    APPUtils.showToast(this, "value=" + value + " xlz=" + xlz);
-                    Log.d(TAG, "value =" + value + "ac=" + ac1 + "as=" + as1List[i] + "logresult=" + logresult);
+                    Log.d(TAG, "value2 =" + value + "Ac=" + Ac + "as=" + as1List[i] + "logresult=" + logresult);
                     Log.d(TAG, "i=" + i + " value=" + value + " xlz=" + xlz);
                     value = Double.parseDouble(df.format(value));
 
@@ -923,7 +923,7 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
                                 Global.project.unit);
 
 
-                    }  else if (xlz == 555) {
+                    } else if (xlz == 555) {
                         Log.d(TAG, "value a=" + value);
                         Log.d(TAG, "i=" + i + " value=" + value + " xlz=" + xlz);
 //                        APPUtils.showToast(this, "value=" + value + " xlz=" + xlz);
@@ -1111,11 +1111,11 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
                             finish();
                         }
                     }).setPositiveButton("取消", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            }).create().show();
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    }).create().show();
         } else {
             countDownLatch();
             finish();
@@ -1554,7 +1554,9 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
         return false;
     }
 
-    /** Legacy branch retained for compatibility with historical result handling. */
+    /**
+     * Legacy branch retained for compatibility with historical result handling.
+     */
     private boolean isGyhwm() {
         return false;
     }
