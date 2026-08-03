@@ -31,7 +31,7 @@ android {
 
 repositories {
     maven {
-        url 'http://oss.jfrog.org/artifactory/oss-snapshot-local'
+        url 'https://oss.jfrog.org/artifactory/oss-snapshot-local'
     }
 }
 
