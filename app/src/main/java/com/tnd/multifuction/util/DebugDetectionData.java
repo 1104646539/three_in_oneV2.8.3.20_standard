@@ -17,7 +17,7 @@ public final class DebugDetectionData {
         }
         float[] readings = new float[channelCount];
         for (int i = 0; i < readings.length; i++) {
-            readings[i] = Math.abs(new Random().nextInt() * 100 % value);
+            readings[i] = (float) Math.abs(new Random().nextDouble() * 100000 % value);
         }
 //        Arrays.fill(readings, value);
         return readings;

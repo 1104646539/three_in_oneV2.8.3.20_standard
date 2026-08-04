@@ -114,6 +114,10 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
     private List<Project> projects = new ArrayList<>();
     private Spinner spn_project;
     private Project mProject;
+    /**
+     * Spinner position that has already been handled; -1 allows the initial callback.
+     */
+    private int currentProjectPosition = -1;
     private TextView tv_yzl;
     private CheckResult tempResult;
     private float[] d;
@@ -360,6 +364,56 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
 
     private int compareChannelIndex = 0;
 
+    /**
+     * Clears state owned by the previous project while retaining the fixed channel rows.
+     */
+    private void resetProjectState() {
+        countDownClear();
+        if (reactionTimer != null) {
+            reactionTimer.cancel();
+            reactionTimer = null;
+        }
+        if (mTimer != null) {
+            mTimer.cancel();
+            mTimer = null;
+        }
+
+        Ac = 0;
+        ac1 = 0;
+        as1List = null;
+        as2List = null;
+        AsList = null;
+        d = null;
+        tempResult = null;
+        savaDatas = null;
+        selectedChannels = null;
+        compareChannelIndex = 0;
+        isComparing = false;
+        isTesting = false;
+
+        if (sp != null) {
+            sp.edit().remove(SPResource.KEY_COMPARE_VALUE).apply();
+        }
+        tvCompareValue.setText(getResources().getString(R.string.contrastValue));
+        tv_status.setText("");
+        btnTest.setEnabled(false);
+        cbSelectAll.setSelected(false);
+        tv_alis.setSelected(false);
+        if (testAdapter != null) {
+            testAdapter.setAllSelect(false);
+        }
+
+        resultList = new ArrayList<>();
+        for (int i = 0; i < CHANNEL_COUNT; i++) {
+            CheckResult checkResult = new CheckResult();
+            checkResult.channel = "A" + (i + 1);
+            resultList.add(checkResult);
+        }
+        if (testAdapter != null) {
+            testAdapter.setData(resultList);
+        }
+    }
+
     private void compare() {
         if (testAdapter.getSelectedCount() == 0
                 || testAdapter.getSelectedCount() > 1) {
@@ -372,7 +426,7 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
             return;
         }
         if (Global.isCodeDebug) {
-            d = DebugDetectionData.readings(CHANNEL_COUNT, 0.6f);
+            d = DebugDetectionData.readings(CHANNEL_COUNT, 65535);
             Ac = DetectionCalculations.randomBlankReference(random);
             saveAc2Sp();
             tv_status.setText("对照成功");
@@ -552,7 +606,7 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
                     Log.d("jiance", "ToolUtils.compare_success" + ToolUtils.compare_success);
                     isComparing = false;
                     spn_project.setEnabled(true);
-                    Toast.makeText(act, "对照结果：" + Ac, Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(act, "对照结果：" + Ac, Toast.LENGTH_SHORT).show();
                     if (isNc()) {
                         if (Ac < COMPARE_MIN_VALUE) {
 //                            APPUtils.showToast(PesticideTestActivity2.this,"ac="+Ac);
@@ -599,6 +653,9 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
         if (isNc()) {
             reactionTime = Global.cardWarmTime;
         } else {
+            reactionTime = 3;
+        }
+        if (Global.isCodeDebug) {
             reactionTime = 3;
         }
     }
@@ -650,7 +707,7 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
                     index++;
                 } else if (isGyhwm()) {
 //                    float logresult = Math.abs(log((ac1/as1List[i]), 10));
-                    float logresult = (float) Math.log10(d[i]) - (float) Math.log10(as1List[i]);
+                    float logresult = (float) Math.log10(Ac) - (float) Math.log10(as1List[i]);
                     double value = DetectionCalculations.calculate(
                             mProject.k, logresult, Ac, mProject.b);
 
@@ -819,10 +876,10 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
                     index++;
                 } else {
 //                    float logresult = Math.abs(log((ac1/as1List[i]), 10));
-                    float logresult = (float) Math.log10(d[i]) - (float) Math.log10(as1List[i]);
+                    float logresult = (float) Math.log10(Ac) - (float) Math.log10(as1List[i]);
                     double value = DetectionCalculations.calculate(
                             mProject.k, logresult, Ac, mProject.b);
-                    Toast.makeText(act, "检测结果：value=" + value + " k=" + mProject.k + " b=" + mProject.b + " Ac=" + Ac + " logresult=" + logresult, Toast.LENGTH_LONG).show();
+//                    Toast.makeText(act, "检测结果：value=" + value + "Ac=" + Ac + "as1List" + as1List[i] + " k=" + mProject.k + " b=" + mProject.b + " Ac=" + Ac + " logresult=" + logresult, Toast.LENGTH_LONG).show();
                     Log.d(TAG, "检测结果：value=" + value + " k=" + mProject.k + " b=" + mProject.b + " Ac=" + Ac + " logresult=" + logresult);
                     Log.d(TAG, "d[i]=" + d[i] + " as1List[i]=" + as1List[i]);
 //                    APPUtils.showToast(this, "value=" + value + " xlz=" + xlz);
@@ -1181,6 +1238,11 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//        boolean projectChanged = currentProjectPosition >= 0 && currentProjectPosition != position;
+//        if (projectChanged) {
+//            resetProjectState();
+//        }
+        currentProjectPosition = position;
         mProject = projects.get(position);
         if (isNc()) {
             tv_yzl.setText("抑制率");
@@ -1320,8 +1382,7 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
         }
         if (Global.DEBUG) Log.i(TAG, "发送数据====" + new String(Global.GETALLDATA));
         if (Global.isCodeDebug) {
-            float value = flag == TEST_START ? 0.6f : 0.5f;
-            parseTest(DebugDetectionData.readings(CHANNEL_COUNT, value), flag);
+            parseTest(DebugDetectionData.readings(CHANNEL_COUNT, 65535), flag);
             countDownLatch();
             return;
         }
@@ -1484,7 +1545,7 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
                 Log.d(TAG, "ac1=" + ac1);
                 if (!isNc()) {//多功能只需取一次值便对照完成
                     Ac = ac1;
-                    saveAc2Sp();
+//                    saveAc2Sp();
                     mHandler.sendEmptyMessage(ToolUtils.compare_success);
                 }
                 return;

@@ -13,7 +13,7 @@ public final class DetectionCalculations {
 
     public static double calculate(double k, double measuredValue,
                                    double blankReference, double b) {
-        return k * (measuredValue - blankReference) + b;
+        return k * (measuredValue) + b;
 //        return k * (measuredValue ) + b;
     }
 
