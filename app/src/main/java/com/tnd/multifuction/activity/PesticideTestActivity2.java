@@ -391,9 +391,9 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
         isComparing = false;
         isTesting = false;
 
-        if (sp != null) {
-            sp.edit().remove(SPResource.KEY_COMPARE_VALUE).apply();
-        }
+//        if (sp != null) {
+//            sp.edit().remove(SPResource.KEY_COMPARE_VALUE).apply();
+//        }
         tvCompareValue.setText(getResources().getString(R.string.contrastValue));
         tv_status.setText("");
         btnTest.setEnabled(false);
@@ -1238,10 +1238,10 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//        boolean projectChanged = currentProjectPosition >= 0 && currentProjectPosition != position;
-//        if (projectChanged) {
-//            resetProjectState();
-//        }
+        boolean projectChanged = currentProjectPosition >= 0 && currentProjectPosition != position;
+        if (projectChanged) {
+            resetProjectState();
+        }
         currentProjectPosition = position;
         mProject = projects.get(position);
         if (isNc()) {
