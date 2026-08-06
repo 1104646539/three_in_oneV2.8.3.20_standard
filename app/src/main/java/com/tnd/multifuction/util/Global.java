@@ -79,7 +79,7 @@ public class Global {
      */
     public static final String COM4_T3 = "/dev/ttySAC4";
 
-    public static final int CHANNEL_COUNT = 20;
+    public static final int CHANNEL_COUNT = 10;
 
     public static final byte[] GETALLDATA = "GetAllData".getBytes();
     /**
