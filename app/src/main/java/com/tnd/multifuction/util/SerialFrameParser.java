@@ -42,7 +42,32 @@ public final class SerialFrameParser {
     }
 
     public static float[] parseReadings(byte[] frame, int channelCount) {
-        if (frame == null || channelCount <= 0) {
+        if (channelCount <= 0) {
+            return null;
+        }
+        float[] readings = parseReadings(frame);
+        if (readings == null || readings.length != channelCount) {
+            return null;
+        }
+        return readings;
+    }
+
+    /** Parses a frame and returns only the first requested channels, ignoring extra channels. */
+    public static float[] parseFirstReadings(byte[] frame, int channelCount) {
+        if (channelCount <= 0) {
+            return null;
+        }
+        float[] readings = parseReadings(frame);
+        if (readings == null || readings.length < channelCount) {
+            return null;
+        }
+        float[] firstReadings = new float[channelCount];
+        System.arraycopy(readings, 0, firstReadings, 0, channelCount);
+        return firstReadings;
+    }
+
+    private static float[] parseReadings(byte[] frame) {
+        if (frame == null) {
             return null;
         }
         String text = new String(frame, ASCII).trim();
@@ -51,10 +76,10 @@ public final class SerialFrameParser {
         }
         String payload = text.substring(2);
         String[] values = payload.split(",", -1);
-        if (values.length != channelCount) {
+        if (values.length == 0) {
             return null;
         }
-        float[] readings = new float[channelCount];
+        float[] readings = new float[values.length];
         try {
             for (int i = 0; i < values.length; i++) {
                 readings[i] = Float.parseFloat(values[i].trim());

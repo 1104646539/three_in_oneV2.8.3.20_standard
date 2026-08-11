@@ -30,6 +30,17 @@ public class SerialFrameParserTest {
     }
 
     @Test
+    public void parsesFirstTenChannelsFromTwentyChannelFrame() {
+        float[] values = SerialFrameParser.parseFirstReadings(
+                NORMAL_FRAME.getBytes(ASCII), 10);
+
+        assertNotNull(values);
+        assertEquals(10, values.length);
+        assertEquals(0.6f, values[0], 0.0001f);
+        assertEquals(0.6f, values[9], 0.0001f);
+    }
+
+    @Test
     public void parsesAllZeroDetectionFrame() {
         float[] values = SerialFrameParser.parseReadings(makeZeroFrame().getBytes(ASCII), 20);
         assertNotNull(values);

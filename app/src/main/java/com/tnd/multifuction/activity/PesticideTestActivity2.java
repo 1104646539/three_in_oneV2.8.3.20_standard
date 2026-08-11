@@ -1439,12 +1439,12 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
     }
 
     private float[] dealTestData(byte[] response) {
-        return SerialFrameParser.parseReadings(response, CHANNEL_COUNT);
+        return SerialFrameParser.parseFirstReadings(response, CHANNEL_COUNT);
     }
 
 
     private float[] computeAc(byte[] response) {
-        return SerialFrameParser.parseReadings(response, CHANNEL_COUNT);
+        return SerialFrameParser.parseFirstReadings(response, CHANNEL_COUNT);
     }
 
     private void sendEmptyMessage(boolean isSucc) {
