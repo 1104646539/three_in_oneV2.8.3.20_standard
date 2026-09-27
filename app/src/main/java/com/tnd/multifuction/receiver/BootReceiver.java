@@ -17,7 +17,7 @@ public class BootReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 
 //        Log.i(TAG, "接收到开机广播.....");
-        Intent in = new Intent(context, MainActivity.class);
+        Intent in = new Intent(context, FirstMainActivity.class);
         in.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         in.putExtra("isBoot", true);
         context.startActivity(in);

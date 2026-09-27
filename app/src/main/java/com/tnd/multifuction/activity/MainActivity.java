@@ -126,9 +126,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
         tv_title.setText(getString(R.string.app_name) + " V"
                 + ToolUtils.getLocalVersionName(this));
 
-        if (getIntent().getBooleanExtra("isBoot", false)) {//每次开机都清零
-            sp.edit().putFloat(SPResource.KEY_COMPARE_VALUE, 0).apply();
-        }
+//        if (getIntent().getBooleanExtra("isBoot", false)) {//每次开机都清零
+//            sp.edit().putFloat(SPResource.KEY_COMPARE_VALUE, 0).apply();
+//        }
 
 
         String str =getJson("test2.json", this);
