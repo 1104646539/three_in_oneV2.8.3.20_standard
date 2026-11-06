@@ -74,6 +74,12 @@
                 android:layout_height="50dp"
                 android:onClick="onEditProject"
                 android:text="项目设置" />
+            <Button
+                style="@style/btnSystemSetting"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:onClick="onCommodityName"
+                android:text="商品名称" />
         </LinearLayout>
 
         <LinearLayout

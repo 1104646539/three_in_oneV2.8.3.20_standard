@@ -43,12 +43,9 @@ import com.tnd.jinbiao.model.SampleModel;
 import com.tnd.jinbiao.model.SampleTypeModel;
 import com.tnd.jinbiao.model.ShiJiModel;
 import com.tnd.multifuction.R;
-import com.tnd.multifuction.adapter.FiltrateAdapter;
 import com.tnd.multifuction.bean.SHData;
 import com.tnd.multifuction.db.DbHelper;
 import com.tnd.multifuction.model.CheckResult;
-import com.tnd.multifuction.model.FiltrateModel;
-import com.tnd.multifuction.model.SampleName;
 import com.tnd.multifuction.thread.UploadThread;
 import com.tnd.multifuction.util.BrightCommandM;
 import com.tnd.multifuction.util.DebugDetectionData;
@@ -73,7 +70,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Timer;
@@ -173,11 +169,8 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
     String s =null;
     private ResultModel resultModel;
 
-    static List<SampleName> sampleNames_s = new ArrayList<>();//样品名称
-    static List<SampleName> sampleNames;
-    private String[] sampleName_s = null;
-    private ArrayAdapter<String> sampleName= null;
-    public SampleName samplename = null;
+    private final List<String> sampleDialogNames = new ArrayList<>();
+    private ArrayAdapter<String> sampleDialogAdapter;
     private TextView tv_check_sample;
     private String path;
     private Dialog dialog;
@@ -185,7 +178,6 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
     private ListView lv;
     private EditText et_weight;
     private EditText et_content;
-    private FiltrateAdapter filtrateAdapter;
     private SimpleDateFormat formatterData;;
     private Button btn_back;
     @Override
@@ -235,9 +227,6 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
             if (sampleUnitList == null) {
                 sampleUnitList = new ArrayList<PeopleModel>();
             }
-            if(sampleNames == null){
-                sampleNames = new ArrayList<SampleName>();
-            }
 
             company_list = new String[companylist.size()];
             persion_list = new String[persionlist.size()];
@@ -246,7 +235,6 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
             project_list = new String[projectlist.size()];
             type_list=new String[typelist.size()];
             sampleUnit_list = new String[sampleUnitList.size()];
-            sampleName_s =new String[sampleNames.size()];
 
             for (int i = 0; i < persionlist.size(); i++) {
                 PeopleModel model = persionlist.get(i);
@@ -279,10 +267,7 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
                 PeopleModel model = sampleUnitList.get(i);
                 sampleUnit_list[i] = model.getName();
             }
-            for(int i = 0; i < sampleNames.size(); i++){
-                SampleName sampleName =  sampleNames.get(i);
-                sampleName_s[i] = sampleName.getSampleName();
-            }
+
 
         } catch (DbException  e) {
             e.printStackTrace();
@@ -327,13 +312,11 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
         project_adapter = new ArrayAdapter<String>(CheckActivity.this, R.layout.item_simple_spiner, project_list);
         type_adapter = new ArrayAdapter<String>(CheckActivity.this, R.layout.item_simple_spiner, type_list);
         sampleUnit_adapter = new ArrayAdapter<String>(CheckActivity.this, R.layout.item_simple_spiner, sampleUnit_list);
-        sampleName = new ArrayAdapter<String>(CheckActivity.this, R.layout.item_simple_spiner, sampleName_s);
 
         companySpinner.setAdapter(company_adater);
         persionSpinner.setAdapter(persion_adapter);
         shijiSpinner.setAdapter(shiji_adapter);
         sampleSpinner.setAdapter(sample_adapter);                      //从样品名称中获取样品名称
-        //sampleSpinner.setAdapter(sampleName);                            //从编码表中获取样品名称
         projectSpinner.setAdapter(project_adapter);
         typeSpinner.setAdapter(type_adapter);
         sampleUnitSpinner.setAdapter(sampleUnit_adapter);
@@ -352,8 +335,7 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                // TODO Auto-generated method stub
-
+                type_model = null;
             }
         });
         projectSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -563,174 +545,14 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
         tv_check_sample.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (dialog == null) {
-                    dialog = new Dialog(CheckActivity.this);
-                    inflate = LayoutInflater.from(CheckActivity.this)
-                            .inflate(R.layout.dialog_filtrate_select, null, false);
-                    lv = inflate.findViewById(R.id.lv);
-                    et_content = inflate.findViewById(R.id.et_content);
-                    filtrateAdapter = new FiltrateAdapter(CheckActivity.this);
-                }
-
-                et_content.setText("");
-                if (sampleNames_s == null || sampleNames_s.isEmpty()) {
-                    try {
-                        List<SampleName> sns = com.tnd.multifuction.db.DbHelper.GetInstance().findAll(Selector.from(SampleName.class)
-                                .orderBy("time", true));
-                        if (sns == null) {
-                            sns = new ArrayList<>();
-                        }
-                        if (sampleNames_s == null) {
-                            sampleNames_s = new ArrayList<>();
-                        } else {
-                            sampleNames_s.clear();
-                        }
-                        sampleNames_s.addAll(sns);
-                    } catch (DbException e) {
-                        e.printStackTrace();
-                    }
-//                sampleNames_s.clear();
-                    if (sampleNames == null) {
-                        sampleNames = new ArrayList<>();
-                    } else {
-                        sampleNames.clear();
-                    }
-                    if (sampleNames_s != null) {
-                        sampleNames.addAll(sampleNames_s);
-                    }
-                } else {
-                    sampleNames.clear();
-                    sampleNames.addAll(sampleNames_s);
-                }
-                filtrateAdapter.setData(sampleNames);
-                lv.setAdapter(filtrateAdapter);
-                lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        tv_check_sample.setText(sampleNames.get(position).getName());
-                        et_Sample_Num.setText("" + sampleNames.get(position).getSampleNumber());
-                        et_Sample_Num.setEnabled(false);
-                        //将最近选择的排列在最前面
-                        sampleNames.get(position).setTime(new Date().getTime());
-                        new SampleName().saveOrUpdate(sampleNames.get(position));
-                        SampleName sn = sampleNames.get(position);
-                        if (position < sampleNames_s.size()) {
-                            sampleNames_s.remove(sn);
-                            sampleNames_s.add(0, sn);
-                        }
-                        sampleNames.remove(position);
-                        sampleNames.add(0, sn);
-                        if (dialog != null && dialog.isShowing()) {
-                            dialog.dismiss();
-                        }
-                    }
-                });
-
-                et_content.setSingleLine();
-                et_content.setImeOptions(EditorInfo.IME_ACTION_NEXT);
-                et_content.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                    @Override
-                    public boolean onEditorAction(TextView tv, int actionId, KeyEvent event) {
-                        boolean handled = false;
-                        if (actionId == EditorInfo.IME_ACTION_NEXT) {
-                            tv_check_sample.setText(et_content.getText());
-
-                            handled = true;
-
-                            dialog.dismiss();
-                            et_content.setText("");
-                        }
-                        return handled;
-                    }
-                });
-                dialog.show();
-                dialog.setContentView(inflate);
-
-                et_content.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable s) {
-                        String str = "";
-                        if (s == null || s.toString().equals("") || s.toString().trim().equals("")) {
-                            str = "";
-                        } else {
-                            str = s.toString().trim();
-                        }
-                        onAdapterFilter(str);
-                    }
-
-                    private void onAdapterFilter(String str) {
-                        if (str == null || str.equals("")) {
-                            sampleNames = new ArrayList<>();
-                            sampleNames.addAll(sampleNames_s);
-                            filtrateAdapter.setData(sampleNames);
-                        } else {
-                            sampleNames = new ArrayList<>();
-                            sampleNames.addAll(sampleNames_s);
-                            filtrateAdapter.setData(filter(str, sampleNames));
-                        }
-                    }
-                    private List<SampleName> filter(String str, List<SampleName> data) {
-                        Iterator<SampleName> iterable = data.iterator();
-                        while (iterable.hasNext()) {
-                            FiltrateModel m
-                                    = iterable.next();
-                            if (!m.getName().contains(str)) {
-                                iterable.remove();
-                            }
-                        }
-                        return data;
-                    }
-
-                });
+                showSampleNameDialog();
             }
         });
 
         sampleUnitSpinner.setVisibility(View.VISIBLE);
         typeSpinner.setVisibility(View.VISIBLE);
-        /*tv_check_type.setVisibility(View.GONE);
-        tv_checkactivity_sampleunit.setVisibility(View.GONE);*/
+        et_Sample_Num.setEnabled(true);
 
-
-
-
-        if(sampleNames_s == null || sampleNames_s.isEmpty()){
-            try {
-                List<SampleName> sns = DbHelper.GetInstance().findAll(Selector.from(SampleName.class)
-                        .orderBy("time", true));
-                if (sns == null) {
-                    sns = new ArrayList<>();
-                }
-                if (sampleNames_s == null) {
-                    sampleNames_s = new ArrayList<>();
-                } else {
-                    sampleNames_s.clear();
-                }
-                sampleNames_s.addAll(sns);
-            } catch (DbException e) {
-                e.printStackTrace();
-            }
-            if (sampleNames == null) {
-                sampleNames = new ArrayList<>();
-            } else {
-                sampleNames.clear();
-            }
-            if (sampleNames_s != null) {
-                sampleNames.addAll(sampleNames_s);
-            }
-        }else {
-            sampleNames.clear();
-            sampleNames.addAll(sampleNames_s);
-        }
         //上传数据按钮事件
         upload_data.setOnClickListener(new View.OnClickListener() {
 
@@ -740,6 +562,99 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
                 ClickUpload();
             }
         });
+    }
+
+    private void showSampleNameDialog() {
+        if (dialog == null) {
+            dialog = new Dialog(CheckActivity.this);
+            inflate = LayoutInflater.from(this).inflate(R.layout.dialog_filtrate_select, null, false);
+            lv = inflate.findViewById(R.id.lv);
+            et_content = inflate.findViewById(R.id.et_content);
+            sampleDialogAdapter = new ArrayAdapter<String>(this,
+                    R.layout.item_filtrate_dialog, R.id.item_filtrate_name, new ArrayList<String>());
+            lv.setAdapter(sampleDialogAdapter);
+            TextView emptyView = new TextView(this);
+            emptyView.setText("请先添加样品名称");
+            emptyView.setTextSize(24);
+            android.view.ViewGroup listContainer = (android.view.ViewGroup) lv.getParent();
+            listContainer.addView(emptyView, listContainer.indexOfChild(lv));
+            lv.setEmptyView(emptyView);
+            lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    tv_check_sample.setText(sampleDialogAdapter.getItem(position));
+                    dialog.dismiss();
+                }
+            });
+            et_content.setSingleLine();
+            et_content.setImeOptions(EditorInfo.IME_ACTION_NEXT);
+            et_content.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView tv, int actionId, KeyEvent event) {
+                    if (actionId == EditorInfo.IME_ACTION_NEXT
+                            || actionId == EditorInfo.IME_ACTION_DONE
+                            || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER
+                            && event.getAction() == KeyEvent.ACTION_DOWN)) {
+                        String name = et_content.getText().toString().trim();
+                        if (TextUtils.isEmpty(name)) {
+                            Toast.makeText(CheckActivity.this, "请先填写样品名称", Toast.LENGTH_SHORT).show();
+                            return true;
+                        }
+                        tv_check_sample.setText(name);
+                        dialog.dismiss();
+                        return true;
+                    }
+                    return false;
+                }
+            });
+            et_content.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    filterSampleNames(s.toString().trim());
+                }
+            });
+        }
+
+        sampleDialogNames.clear();
+        try {
+            List<SampleModel> samples = db.findAll(Selector.from(SampleModel.class));
+            if (samples != null) {
+                for (SampleModel sample : samples) {
+                    if (!TextUtils.isEmpty(sample.getName())) {
+                        sampleDialogNames.add(sample.getName());
+                    }
+                }
+            }
+        } catch (DbException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "样品列表加载失败，请重试", Toast.LENGTH_SHORT).show();
+        }
+        et_content.setText("");
+        filterSampleNames("");
+        dialog.show();
+        dialog.setContentView(inflate);
+    }
+
+    private void filterSampleNames(String query) {
+        sampleDialogAdapter.clear();
+        for (String name : sampleDialogNames) {
+            if (name.contains(query)) {
+                sampleDialogAdapter.add(name);
+            }
+        }
+        sampleDialogAdapter.notifyDataSetChanged();
+    }
+
+    private String getSelectedSampleType() {
+        return type_model == null ? "" : type_model.getName();
     }
 
     private void ClickUpload() {
@@ -760,6 +675,8 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
         List<CheckResult> list = new ArrayList<>();
         CheckResult checkResult = new CheckResult();
         checkResult.sampleName = tv_check_sample.getText().toString();//样品名称
+        checkResult.sampleType = getSelectedSampleType();//样品类型
+        checkResult.sampleNum = et_Sample_Num.getText().toString();//样品编号
         checkResult.projectName = projectlist.get(projectSpinner.getSelectedItemPosition()).getName();//检测项目
         checkResult.testTime =  new Date().getTime();//检测时间
         //checkResult.twh = new Random().nextInt(100000)+"";//商品来源/摊位号
@@ -831,7 +748,7 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
         sb.append("\"sample_unit\":");;//商品来源
         sb.append("\"" + sampleUnitList.get(sampleUnitSpinner.getSelectedItemPosition()).getName() + "\"" + ",");
         sb.append("\"sample_type\":");;//样品类型
-        sb.append("\"" + typelist.get(typeSpinner.getSelectedItemPosition()).getName() + "\"" + ",");
+        sb.append("\"" + getSelectedSampleType() + "\"" + ",");
         sb.append("\"test_results\":");;//检测结果
         sb.append("\"" + etResult.getText().toString().trim() + "\"" + ",");
         sb.append("\"critical_value\":");;//检测值
@@ -1039,7 +956,7 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
 //			resultModel.shiji = shiji_model.getName();
             resultModel.sample_name =  tv_check_sample.getText().toString();
             resultModel.sample_number = et_Sample_Num.getText().toString();
-            resultModel.sample_type = typeSpinner.getSelectedItem().toString();
+            resultModel.sample_type = getSelectedSampleType();
             resultModel.project_name = selectedProject.getName();
 //            resultModel.sample_unit = sampleUnit_model.getName();
             resultModel.xian = etJcx.getText().toString();
@@ -1116,8 +1033,8 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
             Toast.makeText(this, "请先填写样品名称", Toast.LENGTH_LONG).show();
             return false;
         }
-        if (type_model == null) {
-            Toast.makeText(this, "请先选样品类型", Toast.LENGTH_LONG).show();
+        if (type_model == null || TextUtils.isEmpty(type_model.getName())) {
+            Toast.makeText(this, "请先添加并选择样品类型", Toast.LENGTH_LONG).show();
             return false;
         }
 

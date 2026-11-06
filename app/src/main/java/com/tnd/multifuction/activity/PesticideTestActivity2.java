@@ -40,6 +40,7 @@ import com.tnd.multifuction.db.PresetData;
 import com.tnd.multifuction.model.CheckResult;
 import com.tnd.multifuction.model.Project;
 import com.tnd.multifuction.model.SampleName;
+import com.tnd.multifuction.model.SampleLimitRules;
 import com.tnd.multifuction.resource.SPResource;
 import com.tnd.multifuction.thread.UploadThread;
 import com.tnd.multifuction.util.APPUtils;
@@ -722,7 +723,7 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
                     Log.d(TAG, "i=" + i + " value=" + value + " xlz=" + xlz);
                     double jcx = mProject.cardXlz;//检出限
 
-                    if (xlz == 999) {
+                    if (SampleLimitRules.isSpecialLimit(cr.sn != null && cr.sn.manuallyAdded, xlz, 999)) {
                         Log.d(TAG, "value a=" + value);
                         Log.d(TAG, "i=" + i + " value=" + value + " xlz=" + xlz);
 //                        APPUtils.showToast(this, "value=" + value + " xlz=" + xlz);
@@ -751,7 +752,7 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
                                 Global.project.unit);
 
 
-                    } else if (xlz == 888) {
+                    } else if (SampleLimitRules.isSpecialLimit(cr.sn != null && cr.sn.manuallyAdded, xlz, 888)) {
                         Log.d(TAG, "value a=" + value);
                         Log.d(TAG, "i=" + i + " value=" + value + " xlz=" + xlz);
 //                        APPUtils.showToast(this, "value=" + value + " xlz=" + xlz);
@@ -780,7 +781,7 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
                                 Global.project.unit);
 
 
-                    } else if (xlz == 666) {
+                    } else if (SampleLimitRules.isSpecialLimit(cr.sn != null && cr.sn.manuallyAdded, xlz, 666)) {
                         Log.d(TAG, "value a=" + value);
                         Log.d(TAG, "i=" + i + " value=" + value + " xlz=" + xlz);
 //                        APPUtils.showToast(this, "value=" + value + " xlz=" + xlz);
@@ -809,7 +810,7 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
                                 Global.project.unit);
 
 
-                    } else if (xlz == 555) {
+                    } else if (SampleLimitRules.isSpecialLimit(cr.sn != null && cr.sn.manuallyAdded, xlz, 555)) {
                         Log.d(TAG, "value a=" + value);
                         Log.d(TAG, "i=" + i + " value=" + value + " xlz=" + xlz);
 //                        APPUtils.showToast(this, "value=" + value + " xlz=" + xlz);
@@ -893,7 +894,7 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
                     Log.d(TAG, "i=" + i + " value=" + value + " xlz=" + xlz);
                     double jcx = mProject.cardXlz;//检出限
 
-                    if (xlz == 999) {
+                    if (SampleLimitRules.isSpecialLimit(cr.sn != null && cr.sn.manuallyAdded, xlz, 999)) {
                         Log.d(TAG, "value a=" + value);
                         Log.d(TAG, "i=" + i + " value=" + value + " xlz=" + xlz);
 //                        APPUtils.showToast(this, "value=" + value + " xlz=" + xlz);
@@ -922,7 +923,7 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
                                 Global.project.unit);
 
 
-                    } else if (xlz == 888) {
+                    } else if (SampleLimitRules.isSpecialLimit(cr.sn != null && cr.sn.manuallyAdded, xlz, 888)) {
                         Log.d(TAG, "value a=" + value);
                         Log.d(TAG, "i=" + i + " value=" + value + " xlz=" + xlz);
 //                        APPUtils.showToast(this, "value=" + value + " xlz=" + xlz);
@@ -951,7 +952,7 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
                                 Global.project.unit);
 
 
-                    } else if (xlz == 666) {
+                    } else if (SampleLimitRules.isSpecialLimit(cr.sn != null && cr.sn.manuallyAdded, xlz, 666)) {
                         Log.d(TAG, "value a=" + value);
                         Log.d(TAG, "i=" + i + " value=" + value + " xlz=" + xlz);
 //                        APPUtils.showToast(this, "value=" + value + " xlz=" + xlz);
@@ -980,7 +981,7 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
                                 Global.project.unit);
 
 
-                    } else if (xlz == 555) {
+                    } else if (SampleLimitRules.isSpecialLimit(cr.sn != null && cr.sn.manuallyAdded, xlz, 555)) {
                         Log.d(TAG, "value a=" + value);
                         Log.d(TAG, "i=" + i + " value=" + value + " xlz=" + xlz);
 //                        APPUtils.showToast(this, "value=" + value + " xlz=" + xlz);
@@ -1070,6 +1071,9 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
         List<CheckResult> crs = testAdapter.getData();
         CheckResult checkResult = crs.get(index);
         if (checkResult != null && checkResult.sn != null) {
+            if (checkResult.sn.manuallyAdded) {
+                return SampleLimitRules.manualLimit(checkResult.sn.manualLimit, mProject.projectName);
+            }
             try {
                 List<SampleName.Project> snps = checkResult.sn.getProjects();
                 if (snps != null) {
@@ -1181,6 +1185,7 @@ public class PesticideTestActivity2 extends TestActivity implements View.OnClick
 
     @Override
     protected void onDestroy() {
+        if (testAdapter != null) testAdapter.release();
 //        Log.i(TAG, "onDestroy()");
         if (mTimer != null) mTimer.cancel();
         if (reactionTimer != null) reactionTimer.cancel();

@@ -17,6 +17,7 @@ import com.tnd.jinbiao.model.SampleUnitModel;
 import com.tnd.jinbiao.model.ShiJiModel;
 import com.tnd.multifuction.model.Project;
 import com.tnd.multifuction.util.Global;
+import com.tnd.multifuction.model.SampleName;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -61,6 +62,33 @@ public class DbHelper {
             } catch (DbException e) {
                 throw new IllegalStateException("数据库初始化失败", e);
             }
+        }
+        ensureManualSampleColumns(db);
+    }
+
+    /** Additive migration: safe for both existing installations and repeated startup. */
+    static void ensureManualSampleColumns(DbUtils sampleDb) {
+        try {
+            sampleDb.createTableIfNotExist(SampleName.class);
+            SQLiteDatabase database = sampleDb.getDatabase();
+            String table = SampleName.class.getName().replace('.', '_');
+            boolean hasManualFlag = false;
+            boolean hasManualLimit = false;
+            try (Cursor cursor = database.rawQuery("PRAGMA table_info(" + table + ")", null)) {
+                while (cursor.moveToNext()) {
+                    String column = cursor.getString(cursor.getColumnIndexOrThrow("name"));
+                    hasManualFlag |= "manuallyAdded".equals(column);
+                    hasManualLimit |= "manualLimit".equals(column);
+                }
+            }
+            if (!hasManualFlag) {
+                database.execSQL("ALTER TABLE " + table + " ADD COLUMN manuallyAdded INTEGER DEFAULT 0");
+            }
+            if (!hasManualLimit) {
+                database.execSQL("ALTER TABLE " + table + " ADD COLUMN manualLimit REAL DEFAULT 0");
+            }
+        } catch (DbException e) {
+            throw new IllegalStateException("无法初始化商品数据", e);
         }
     }
 

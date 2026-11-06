@@ -18,6 +18,7 @@ import com.lidroid.xutils.db.sqlite.ColumnDbType;
 import com.lidroid.xutils.db.sqlite.Selector;
 import com.lidroid.xutils.exception.DbException;
 import com.tnd.multifuction.db.DbHelper;
+import com.tnd.multifuction.db.SampleNameRepository;
 
 public class SampleName extends UserInputModel<SampleName> implements FiltrateModel{
     private boolean isSelect;
@@ -25,7 +26,52 @@ public class SampleName extends UserInputModel<SampleName> implements FiltrateMo
     public String sampleType;
     public String sampleNumber;
     public long time;
+    public boolean manuallyAdded;
+    public double manualLimit;
+
+    @Override public boolean save(SampleName sample) {
+        boolean saved = super.save(sample);
+        if (saved) SampleNameRepository.invalidate();
+        return saved;
+    }
+
+    @Override public boolean saveAll(List<SampleName> samples) {
+        boolean saved = super.saveAll(samples);
+        if (saved) SampleNameRepository.invalidate();
+        return saved;
+    }
+
+    @Override public void saveOrUpdate(SampleName sample) {
+        try {
+            dbUtils.saveOrUpdate(sample);
+            SampleNameRepository.invalidate();
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override public boolean delete(SampleName sample) {
+        boolean deleted = super.delete(sample);
+        if (deleted) SampleNameRepository.invalidate();
+        return deleted;
+    }
+
     public List<Project> getProjects() throws DbException {
+        if (manuallyAdded) {
+            List<Project> result = new ArrayList<>();
+            List<com.tnd.multifuction.model.Project> available =
+                    DbHelper.GetInstance().findAll(com.tnd.multifuction.model.Project.class);
+            if (available != null) {
+                for (com.tnd.multifuction.model.Project project : available) {
+                    Project item = new Project();
+                    item.projectName = project.projectName;
+                    item.parent_id = sampleName;
+                    item.jcx = (float) SampleLimitRules.manualLimit(manualLimit, project.projectName);
+                    result.add(item);
+                }
+            }
+            return result;
+        }
         return DbHelper.GetInstance().findAll(new Selector(Project.class).where("parent_id","=",sampleName));//一对多的查询
     }
 

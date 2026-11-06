@@ -36,6 +36,7 @@ import android.widget.Toast;
 import com.tnd.multifuction.R;
 import com.tnd.multifuction.adapter.DialogSelectAdapter;
 import com.tnd.multifuction.dialog.EditDataDialog;
+import com.tnd.multifuction.dialog.ManualSampleDialog;
 import com.tnd.multifuction.dialog.EditURLDialog;
 import com.tnd.multifuction.dialog.PrintSettingDialog;
 import com.tnd.multifuction.dialog.UploadingDialog;
@@ -406,6 +407,10 @@ public class SystemSettingActivity2 extends Activity implements View.OnClickList
     public void onSampleName(View v) {
         editDataDialog_sn.showDialog("样品名称",
                 EditDataDialog.DIALOG_TYPE_SAMPLENAME, null);
+    }
+
+    public void onCommodityName(View v) {
+        new ManualSampleDialog(this).show();
     }
 
     /**
