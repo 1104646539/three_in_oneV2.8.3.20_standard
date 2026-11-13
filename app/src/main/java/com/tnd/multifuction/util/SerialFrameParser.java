@@ -51,12 +51,12 @@ public final class SerialFrameParser {
         }
         String payload = text.substring(2);
         String[] values = payload.split(",", -1);
-        if (values.length != channelCount) {
+        if (values.length < channelCount) {
             return null;
         }
         float[] readings = new float[channelCount];
         try {
-            for (int i = 0; i < values.length; i++) {
+            for (int i = 0; i < channelCount; i++) {
                 readings[i] = Float.parseFloat(values[i].trim());
                 if (Float.isNaN(readings[i]) || Float.isInfinite(readings[i])) {
                     return null;

@@ -30,6 +30,33 @@ public class SerialFrameParserTest {
     }
 
     @Test
+    public void parsesOnlyConfiguredChannelsFromLongerFrame() {
+        float[] values = SerialFrameParser.parseReadings(NORMAL_FRAME.getBytes(ASCII), 10);
+
+        assertNotNull(values);
+        assertEquals(10, values.length);
+        assertEquals(0.6f, values[0], 0.0001f);
+        assertEquals(0.6f, values[9], 0.0001f);
+    }
+
+    @Test
+    public void ignoresInvalidValuesAfterConfiguredChannels() {
+        String frame = makeFrame(11, false).replace("10.1", "ERR");
+
+        float[] values = SerialFrameParser.parseReadings(frame.getBytes(ASCII), 10);
+
+        assertNotNull(values);
+        assertEquals(10, values.length);
+    }
+
+    @Test
+    public void rejectsIncompleteOrInvalidConfiguredChannels() {
+        assertNull(SerialFrameParser.parseReadings(makeFrame(9, false).getBytes(ASCII), 10));
+        assertNull(SerialFrameParser.parseReadings(
+                "OKNaN,1,2,3,4,5,6,7,8,9\n".getBytes(ASCII), 10));
+    }
+
+    @Test
     public void parsesAllZeroDetectionFrame() {
         float[] values = SerialFrameParser.parseReadings(makeZeroFrame().getBytes(ASCII), 20);
         assertNotNull(values);
@@ -54,10 +81,10 @@ public class SerialFrameParserTest {
     }
 
     @Test
-    public void rejectsMalformedDetectionFrames() {
+    public void rejectsMalformedOrIncompleteDetectionFrames() {
         assertNull(SerialFrameParser.parseReadings("0.1,0.2\n".getBytes(ASCII), 20));
         assertNull(SerialFrameParser.parseReadings(makeFrame(19, false).getBytes(ASCII), 20));
-        assertNull(SerialFrameParser.parseReadings(makeFrame(21, false).getBytes(ASCII), 20));
+        assertEquals(20, SerialFrameParser.parseReadings(makeFrame(21, false).getBytes(ASCII), 20).length);
         assertNull(SerialFrameParser.parseReadings(makeFrame(20, true).getBytes(ASCII), 20));
         assertNull(SerialFrameParser.parseReadings(makeFrame(20, false)
                 .replace("10.1", "ERR").getBytes(ASCII), 20));
